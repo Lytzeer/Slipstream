@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Slipstream",
-    "slug": "Slipstream",
+    "slug": "slipstream",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "59052126-e373-468f-8c96-661e6dde0d55"
+      }
+    },
+    "owner": "slipstream-app"
   }
 }
