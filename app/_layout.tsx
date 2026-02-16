@@ -10,7 +10,9 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false, gestureEnabled: false }} />
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+        <Stack.Screen name="onBoarding" options={{ animation: "slide_from_left" }} />
+      </Stack>
       <StatusBar style="light" />
     </ThemeProvider>
   );

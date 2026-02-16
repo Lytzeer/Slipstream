@@ -16,7 +16,11 @@ export default function OnBoarding() {
           L'actualité du sport automobile d'endurance.
         </Text>
         <View style={styles.buttonsContainer}>
-          <Button label="Créer un compte" variant="primary" />
+          <Button
+            label="Créer un compte"
+            variant="primary"
+            onPress={() => router.push("/signUp")}
+          />
           <Button
             label="Se connecter"
             variant="secondary"
