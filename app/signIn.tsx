@@ -21,11 +21,11 @@ export default function SignIn() {
         <Text style={styles.title}>Connexion</Text>
       </View>
       <View style={styles.formContainer}>
-        <View>
+        <View style={styles.inputContainer}>
           <Text>Adresse email</Text>
           <Input leftIcon={Mail} placeholder="your.mail@exemple.com" />
         </View>
-        <View>
+        <View style={styles.inputContainer}>
           <Text>Mot de passe</Text>
           <Input leftIcon={Lock} isPassword placeholder="Votre mot de passe" />
         </View>
@@ -79,11 +79,7 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 60,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    padding: 8,
+  inputContainer: {
     width: "100%",
   },
   forgotPassword: {
