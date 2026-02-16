@@ -1,4 +1,5 @@
 import Button from "@/components/ui/button";
+import { router } from "expo-router";
 import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 
@@ -16,8 +17,16 @@ export default function OnBoarding() {
         </Text>
         <View style={styles.buttonsContainer}>
           <Button label="Créer un compte" variant="primary" />
-          <Button label="Se connecter" variant="secondary" />
-          <Button label="Continuer sans compte" variant="nobackground" />
+          <Button
+            label="Se connecter"
+            variant="secondary"
+            onPress={() => router.push("/signIn")}
+          />
+          <Button
+            label="Continuer sans compte"
+            variant="nobackground"
+            onPress={() => router.push("/(tabs)")}
+          />
         </View>
       </View>
     </ImageBackground>

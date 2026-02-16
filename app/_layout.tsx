@@ -10,7 +10,7 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: false }} />
       <StatusBar style="light" />
     </ThemeProvider>
   );
