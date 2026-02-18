@@ -1,16 +1,24 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, type PressableProps } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  type PressableProps,
+} from "react-native";
 
 type Variant = "primary" | "secondary" | "outline" | "nobackground";
 
 interface ButtonProps extends PressableProps {
   label: string;
   variant?: Variant;
+  loading?: boolean;
 }
 
 export default function Button({
   label,
   variant = "primary",
+  loading = false,
   disabled,
   ...props
 }: ButtonProps) {
@@ -20,12 +28,18 @@ export default function Button({
         styles.base,
         styles[variant],
         pressed && styles.pressed,
-        disabled && styles.disabled,
+        (disabled || loading) && styles.disabled,
       ]}
-      disabled={disabled}
+      disabled={disabled || loading}
       {...props}
     >
-      <Text style={[styles.label, styles[`${variant}Label`]]}>{label}</Text>
+      {loading ? (
+        <ActivityIndicator
+          color={variant === "nobackground" ? "#fff" : styles[`${variant}Label`].color}
+        />
+      ) : (
+        <Text style={[styles.label, styles[`${variant}Label`]]}>{label}</Text>
+      )}
     </Pressable>
   );
 }
