@@ -55,7 +55,7 @@ export default function SignUp() {
           variant="primary"
           loading={isLoading}
           onPress={() => {
-            setIsLoading(true);
+            // setIsLoading(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             // TODO: Faire l'appel pour l'inscription et setIsLoading(false)
             router.push("/(tabs)");

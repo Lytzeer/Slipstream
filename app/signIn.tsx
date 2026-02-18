@@ -44,7 +44,7 @@ export default function SignIn() {
           variant="primary"
           loading={isLoading}
           onPress={() => {
-            setIsLoading(true);
+            // setIsLoading(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             // TODO: Faire l'appel pour la connexion et setIsLoading(false)
             router.push("/(tabs)");
