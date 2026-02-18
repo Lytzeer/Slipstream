@@ -3,10 +3,12 @@ import InputSection from "@/components/ui/input-section";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { ArrowLeft, Lock, Mail, UserRound } from "lucide-react-native";
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SignUp() {
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -51,8 +53,11 @@ export default function SignUp() {
         <Button
           label="S'inscrire"
           variant="primary"
+          loading={isLoading}
           onPress={() => {
+            setIsLoading(true);
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            // TODO: Faire l'appel pour l'inscription et setIsLoading(false)
             router.push("/(tabs)");
           }}
         />
