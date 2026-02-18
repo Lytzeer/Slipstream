@@ -1,5 +1,6 @@
 import { MotiView } from "moti";
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
+import ChampionshipButton from "./championship-button";
 
 interface Championship {
   id: string;
@@ -33,19 +34,11 @@ export default function ChampionshipSelector({
             animate={{ scale: 1 }}
             transition={{ type: "timing" }}
           >
-            <Pressable
-              onPress={() => onChampionshipChange(champ.id)}
-              style={[
-                styles.button,
-                isSelected
-                  ? { backgroundColor: champ.color }
-                  : styles.secondaryButton,
-              ]}
-            >
-              <Text style={[styles.text, isSelected && styles.selectedText]}>
-                {champ.name}
-              </Text>
-            </Pressable>
+            <ChampionshipButton
+              champ={champ}
+              isSelected={isSelected}
+              onChampionshipChange={onChampionshipChange}
+            />
           </MotiView>
         );
       })}
@@ -56,21 +49,5 @@ export default function ChampionshipSelector({
 const styles = StyleSheet.create({
   container: {
     gap: 8,
-  },
-  button: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-  },
-  secondaryButton: {
-    backgroundColor: "#E5E7EB",
-  },
-  text: {
-    color: "#111827",
-    fontWeight: "600",
-  },
-  selectedText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
   },
 });

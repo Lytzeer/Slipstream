@@ -1,5 +1,7 @@
+import ChampionshipBadge from "@/components/ui/championship-badge";
 import ChampionshipSelector from "@/components/ui/championship-selector";
-import { ChevronRight } from "lucide-react-native";
+import { ImageBackground } from "expo-image";
+import { ChevronRight, Clock } from "lucide-react-native";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -31,6 +33,25 @@ export default function HomeScreen() {
             <Text style={styles.featuredSeeAllText}>Voir tout</Text>
             <ChevronRight color="#FF3B31" size={20} />
           </View>
+        </View>
+        <View>
+          <ImageBackground
+            source={require("../../assets/images/featured.png")}
+            style={styles.featuredImage}
+          >
+            <ChampionshipBadge
+              champ={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
+              isSelected={true}
+              onChampionshipChange={() => {}}
+            />
+            <Text style={styles.featuredImageText}>
+              Retour sur la victoire historique aux 24h du Mans
+            </Text>
+            <View style={styles.featuredImageSubTextContainer}>
+              <Clock color="white" size={14} />
+              <Text style={styles.featuredImageSubText}>8 min de lecture</Text>
+            </View>
+          </ImageBackground>
         </View>
       </View>
     </View>
@@ -64,5 +85,32 @@ const styles = StyleSheet.create({
   featuredSeeAllText: {
     color: "#FF3B31",
     fontWeight: "600",
+  },
+  featuredImage: {
+    width: "100%",
+    height: 200,
+    marginTop: 20,
+    display: "flex",
+    justifyContent: "flex-end",
+    padding: 20,
+    borderRadius: 16,
+    overflow: "hidden",
+    gap: 8,
+  },
+  featuredImageText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  featuredImageSubText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  featuredImageSubTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    opacity: 0.8,
   },
 });
