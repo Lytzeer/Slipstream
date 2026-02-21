@@ -1,7 +1,12 @@
+import Championship from "@/types/Championship";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function ChampionshipBadge({ champ }: any) {
+type ChampionshipBadgeProps = {
+  champ: Championship;
+};
+
+export default function ChampionshipBadge({ champ }: ChampionshipBadgeProps) {
   return (
     <View style={[style.badgeContainer, { backgroundColor: champ.color }]}>
       <Text style={style.badgeText}>{champ.name}</Text>

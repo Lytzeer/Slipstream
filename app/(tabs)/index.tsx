@@ -1,6 +1,7 @@
 import ChampionshipBadge from "@/components/ui/championship-badge";
 import ChampionshipSelector from "@/components/ui/championship-selector";
 import InfoCard from "@/components/ui/info-card";
+import UpcomingRaceCard from "@/components/ui/upcomming-race-card";
 import { ImageBackground } from "expo-image";
 import { ChevronRight, Clock } from "lucide-react-native";
 import { useState } from "react";
@@ -44,8 +45,6 @@ export default function HomeScreen() {
         >
           <ChampionshipBadge
             champ={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
-            isSelected={true}
-            onChampionshipChange={() => {}}
           />
           <Text style={styles.featuredImageText}>
             Retour sur la victoire historique aux 24h du Mans
@@ -70,6 +69,20 @@ export default function HomeScreen() {
           title="Prochaine course à Monza : Preview et favoris"
           readTime="6 min"
         />
+      </View>
+      <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
+        <Text style={styles.featuredHeaderTitle}>Prochaines courses</Text>
+        {championshipsList.map((championship) => (
+          <UpcomingRaceCard
+            key={championship.id}
+            championship={championship}
+            race={{
+              name: "Circuit de la Sarthe",
+              date: "12 Juin 2024",
+              circuit: "Circuit de la Sarthe",
+            }}
+          />
+        ))}
       </View>
     </ScrollView>
   );
