@@ -72,17 +72,22 @@ export default function HomeScreen() {
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
         <Text style={styles.featuredHeaderTitle}>Prochaines courses</Text>
-        {championshipsList.map((championship) => (
-          <UpcomingRaceCard
-            key={championship.id}
-            championship={championship}
-            race={{
-              name: "Circuit de la Sarthe",
-              date: "12 Juin 2024",
-              circuit: "Circuit de la Sarthe",
-            }}
-          />
-        ))}
+        <UpcomingRaceCard
+          championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
+          race={{
+            name: "4 Heures du Castellet",
+            date: "03 Mai 2026",
+            circuit: "Circuit Paul Ricard",
+          }}
+        />
+        <UpcomingRaceCard
+          championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
+          race={{
+            name: "4 Heures d'Imola",
+            date: "05 Juillet 2026",
+            circuit: "Autodromo Enzo e Dino Ferrari",
+          }}
+        />
       </View>
     </ScrollView>
   );
