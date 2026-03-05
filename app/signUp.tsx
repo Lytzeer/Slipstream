@@ -1,5 +1,6 @@
 import Button from "@/components/ui/button";
 import InputSection from "@/components/ui/input-section";
+import { GoogleSignInButton } from "@/components/social-auth/google-sign-in-button";
 import { supabase } from "@/lib/supabase";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -109,11 +110,14 @@ export default function SignUp() {
           textContentType="newPassword"
         />
         {error && <Text style={styles.errorText}>{error}</Text>}
-        <TouchableOpacity onPress={() => {}}>
-          <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
-        </TouchableOpacity>
       </View>
       <View style={styles.buttonsContainer}>
+        <View style={styles.dividerContainer}>
+          <View style={styles.divider} />
+          <Text style={styles.dividerText}>ou</Text>
+          <View style={styles.divider} />
+        </View>
+        <GoogleSignInButton onError={(msg) => setError(msg ?? null)} />
         <Button
           label="S'inscrire"
           variant="primary"
@@ -165,9 +169,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: -8,
   },
-  forgotPassword: {
-    textAlign: "right",
-    color: "#FF3B31",
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    gap: 12,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ddd",
+  },
+  dividerText: {
+    fontSize: 14,
+    color: "#666",
   },
   buttonsContainer: {
     width: "100%",
