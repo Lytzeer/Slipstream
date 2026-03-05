@@ -1,8 +1,9 @@
 import Input from "@/components/ui/input";
 import { LucideIcon } from "lucide-react-native";
 import { StyleSheet, Text, View } from "react-native";
+import type { TextInputProps } from "react-native";
 
-type Props = {
+type Props = TextInputProps & {
   inputTitle: string;
   placeholder: string;
   isPassword?: boolean;
@@ -14,6 +15,7 @@ export default function InputSection({
   placeholder,
   isPassword,
   leftIcon,
+  ...inputProps
 }: Props) {
   return (
     <View style={styles.inputSectionContainer}>
@@ -22,6 +24,7 @@ export default function InputSection({
         placeholder={placeholder}
         isPassword={isPassword}
         leftIcon={leftIcon}
+        {...inputProps}
       />
     </View>
   );

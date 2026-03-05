@@ -1,5 +1,6 @@
 import Button from "@/components/ui/button";
 import InputSection from "@/components/ui/input-section";
+import { supabase } from "@/lib/supabase";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { ArrowLeft, Lock, Mail, UserRound } from "lucide-react-native";
@@ -8,6 +9,50 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignUp = async () => {
+    if (!email.trim() || !password || !fullName.trim()) {
+      setError("Veuillez remplir tous les champs");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Le mot de passe doit contenir au moins 6 caractères");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    const { error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: { full_name: fullName.trim() },
+      },
+    });
+
+    setIsLoading(false);
+
+    if (signUpError) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setError(signUpError.message);
+      return;
+    }
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    router.replace("/(tabs)");
+  };
 
   return (
     <View style={styles.container}>
@@ -27,24 +72,43 @@ export default function SignUp() {
           inputTitle="Nom complet"
           placeholder="Votre nom complet"
           leftIcon={UserRound}
+          value={fullName}
+          onChangeText={setFullName}
+          autoComplete="name"
+          textContentType="name"
         />
         <InputSection
           inputTitle="Adresse email"
           placeholder="your.mail@exemple.com"
           leftIcon={Mail}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoComplete="email"
+          textContentType="emailAddress"
         />
         <InputSection
           inputTitle="Mot de passe"
           placeholder="Votre mot de passe"
           isPassword
           leftIcon={Lock}
+          value={password}
+          onChangeText={setPassword}
+          autoComplete="new-password"
+          textContentType="newPassword"
         />
         <InputSection
           inputTitle="Confirmer le mot de passe"
           placeholder="Confirmez votre mot de passe"
           isPassword
           leftIcon={Lock}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          autoComplete="new-password"
+          textContentType="newPassword"
         />
+        {error && <Text style={styles.errorText}>{error}</Text>}
         <TouchableOpacity onPress={() => {}}>
           <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
         </TouchableOpacity>
@@ -54,12 +118,7 @@ export default function SignUp() {
           label="S'inscrire"
           variant="primary"
           loading={isLoading}
-          onPress={() => {
-            // setIsLoading(true);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            // TODO: Faire l'appel pour l'inscription et setIsLoading(false)
-            router.push("/(tabs)");
-          }}
+          onPress={handleSignUp}
         />
         <View style={styles.signUpLinkContainer}>
           <Text style={styles.text}>Pas encore de compte ? </Text>
@@ -100,6 +159,11 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
+  },
+  errorText: {
+    color: "#FF3B31",
+    fontSize: 14,
+    marginTop: -8,
   },
   forgotPassword: {
     textAlign: "right",

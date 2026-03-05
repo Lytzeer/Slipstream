@@ -1,5 +1,6 @@
 import Button from "@/components/ui/button";
 import InputSection from "@/components/ui/input-section";
+import { supabase } from "@/lib/supabase";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { ArrowLeft, Lock, Mail } from "lucide-react-native";
@@ -8,6 +9,39 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    if (!email.trim() || !password) {
+      setError("Veuillez remplir tous les champs");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    setIsLoading(false);
+
+    if (signInError) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setError(
+        signInError.message === "Invalid login credentials"
+          ? "Email ou mot de passe incorrect"
+          : signInError.message
+      );
+      return;
+    }
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    router.replace("/(tabs)");
+  };
 
   return (
     <View style={styles.container}>
@@ -27,13 +61,24 @@ export default function SignIn() {
           inputTitle="Adresse email"
           placeholder="your.mail@exemple.com"
           leftIcon={Mail}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoComplete="email"
+          textContentType="emailAddress"
         />
         <InputSection
           inputTitle="Mot de passe"
           placeholder="Votre mot de passe"
           isPassword
           leftIcon={Lock}
+          value={password}
+          onChangeText={setPassword}
+          autoComplete="password"
+          textContentType="password"
         />
+        {error && <Text style={styles.errorText}>{error}</Text>}
         <TouchableOpacity onPress={() => {}}>
           <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
         </TouchableOpacity>
@@ -43,12 +88,7 @@ export default function SignIn() {
           label="Se connecter"
           variant="primary"
           loading={isLoading}
-          onPress={() => {
-            // setIsLoading(true);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            // TODO: Faire l'appel pour la connexion et setIsLoading(false)
-            router.push("/(tabs)");
-          }}
+          onPress={handleSignIn}
         />
         <View style={styles.signUpLinkContainer}>
           <Text style={styles.text}>Pas encore de compte ? </Text>
@@ -89,6 +129,11 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
+  },
+  errorText: {
+    color: "#FF3B31",
+    fontSize: 14,
+    marginTop: -8,
   },
   forgotPassword: {
     textAlign: "right",
