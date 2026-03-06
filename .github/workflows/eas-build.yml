@@ -35,4 +35,5 @@ jobs:
         run: |
           eas update \
             --branch ${{ github.head_ref || github.ref_name }} \
+            --environment ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} \
             --message "${{ github.event.head_commit.message || github.event.pull_request.title }}"
