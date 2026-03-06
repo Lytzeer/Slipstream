@@ -14,13 +14,13 @@ import { Lock, Mail } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function SignIn() {
+export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = async () => {
+  const handleLogin = async () => {
     if (!email.trim() || !password) {
       setError("Veuillez remplir tous les champs");
       return;
@@ -87,12 +87,12 @@ export default function SignIn() {
           label="Se connecter"
           variant="primary"
           loading={isLoading}
-          onPress={handleSignIn}
+          onPress={handleLogin}
         />
         <AuthLink
           prefix="Pas encore de compte ? "
           linkText="Créer un compte"
-          onPress={() => router.push("/signUp")}
+          onPress={() => router.push("/create-account")}
         />
       </View>
     </AuthFormLayout>

@@ -98,7 +98,7 @@ export default function AuthCallback() {
       {status === "error" && (
         <>
           <Text style={styles.errorText}>Erreur lors de la connexion</Text>
-          <Text style={styles.link} onPress={() => router.replace("/signIn")}>
+          <Text style={styles.link} onPress={() => router.replace("/login")}>
             Retour à la connexion
           </Text>
         </>

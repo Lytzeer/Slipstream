@@ -19,12 +19,12 @@ export default function OnBoarding() {
           <Button
             label="Créer un compte"
             variant="primary"
-            onPress={() => router.push("/signUp")}
+            onPress={() => router.push("/create-account")}
           />
           <Button
             label="Se connecter"
             variant="secondary"
-            onPress={() => router.push("/signIn")}
+            onPress={() => router.push("/login")}
           />
           <Button
             label="Continuer sans compte"

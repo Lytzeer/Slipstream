@@ -14,7 +14,7 @@ import { Lock, Mail, UserRound } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function SignUp() {
+export default function CreateAccount() {
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleSignUp = async () => {
+  const handleCreateAccount = async () => {
     if (!email.trim() || !password || !fullName.trim()) {
       setError("Veuillez remplir tous les champs");
       return;
@@ -112,12 +112,12 @@ export default function SignUp() {
           label="S'inscrire"
           variant="primary"
           loading={isLoading}
-          onPress={handleSignUp}
+          onPress={handleCreateAccount}
         />
         <AuthLink
           prefix="Déjà un compte ? "
           linkText="Se connecter"
-          onPress={() => router.push("/signIn")}
+          onPress={() => router.push("/login")}
         />
       </View>
     </AuthFormLayout>

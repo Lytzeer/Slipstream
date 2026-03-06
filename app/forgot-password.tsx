@@ -60,7 +60,7 @@ export default function ForgotPassword() {
           <Button
             label="Retour à la connexion"
             variant="primary"
-            onPress={() => router.replace("/signIn")}
+            onPress={() => router.replace("/login")}
           />
         </View>
       </AuthFormLayout>
