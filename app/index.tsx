@@ -1,22 +1,24 @@
-import { Redirect, Slot, useSegments } from "expo-router";
+/**
+ * VIEW - Point d'entrée
+ *
+ * Redirige selon l'état d'authentification : (tabs) si connecté, onBoarding sinon.
+ */
+
+import { LoadingScreen } from "@/components/ui";
+import { useAuth } from "@/contexts/auth-context";
+import { Redirect } from "expo-router";
 import React from "react";
 
 export default function Index() {
-  const isOnboarding = true;
+  const { user, isLoading, isInitialized } = useAuth();
 
-  if (isOnboarding) {
-    return <Redirect href="/onBoarding" />;
-  }
-}
-
-export function RootLayout() {
-  const isLoggedIn = false; // Remplace par ta logique réelle
-
-  // Si pas connecté et pas déjà sur la page de connexion, on redirige
-  const segments = useSegments();
-  if (!isLoggedIn && segments[0] !== "onBoarding") {
-    return <Redirect href="/onBoarding" />;
+  if (!isInitialized || isLoading) {
+    return <LoadingScreen />;
   }
 
-  return <Slot />;
+  if (user) {
+    return <Redirect href="/(tabs)" />;
+  }
+
+  return <Redirect href="/onBoarding" />;
 }
