@@ -17,6 +17,7 @@ import { championshipsList, savedArticles } from "@/constants/mock-data";
 import { colors as designTokens } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useLanguage } from "@/contexts/language-context";
+import { useNotifications } from "@/contexts/notifications-context";
 import { useTheme } from "@/contexts/theme-context";
 import {
   formatMemberSince,
@@ -33,9 +34,9 @@ export default function ProfileScreen() {
   const { user, isLoading } = useAuth();
   const { colors, isDark, setColorScheme } = useTheme();
   const { languageLabel } = useLanguage();
+  const { notificationsEnabled, setNotificationsEnabled } = useNotifications();
   const { t } = useTranslation();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [followedChampionships, setFollowedChampionships] = useState<
     Record<string, boolean>
   >({
@@ -108,7 +109,7 @@ export default function ProfileScreen() {
           title={t("profile.notifications")}
           subtitle={t("profile.notificationsSubtitle")}
           value={notificationsEnabled}
-          onValueChange={setNotificationsEnabled}
+          onValueChange={(v) => setNotificationsEnabled(v)}
           showSwitch
         />
         <SettingRow

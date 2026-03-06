@@ -120,5 +120,11 @@
   "language": {
     "chooseLanguage": "Choose language",
     "applyToApp": "The language will be applied to the entire application"
+  },
+  "notifications": {
+    "promptTitle": "Notifications",
+    "promptMessage": "Allow notifications to receive race and news alerts.",
+    "promptLater": "Later",
+    "promptAllow": "Allow"
   }
 }

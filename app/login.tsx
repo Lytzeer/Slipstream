@@ -7,6 +7,7 @@
 import { AuthFormLayout, ScreenHeader } from "@/components/layout";
 import { AuthLink, GoogleSignInButton } from "@/components/auth";
 import { Button, DividerWithText, InputSection } from "@/components/ui";
+import { useNotifications } from "@/contexts/notifications-context";
 import { authController } from "@/lib/controllers/auth.controller";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -17,6 +18,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
   const { t } = useTranslation();
+  const { requestPermissionAfterLogin } = useNotifications();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,6 +52,7 @@ export default function Login() {
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.replace("/(tabs)");
+    requestPermissionAfterLogin();
   };
 
   return (

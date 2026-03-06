@@ -3,6 +3,7 @@
  *
  * Couche données : client Supabase pour l'authentification et les requêtes.
  * Storage adaptatif : localStorage (web) / AsyncStorage (natif) avec fallback mémoire.
+ * En Expo Go Android, AsyncStorage peut échouer → fallback mémoire uniquement.
  *
  * @see lib/controllers/auth.controller.ts pour la logique métier auth
  */
@@ -31,8 +32,22 @@ const webStorage = {
 
 const memoryFallback = new Map<string, string>();
 
+let asyncStorageAvailable: boolean | null = null;
+
+const checkAsyncStorage = async (): Promise<boolean> => {
+  if (asyncStorageAvailable !== null) return asyncStorageAvailable;
+  try {
+    await AsyncStorage.getItem("__slipstream_storage_check__");
+    asyncStorageAvailable = true;
+  } catch {
+    asyncStorageAvailable = false;
+  }
+  return asyncStorageAvailable;
+};
+
 const nativeStorage = {
   getItem: async (key: string) => {
+    if (!(await checkAsyncStorage())) return memoryFallback.get(key) ?? null;
     try {
       const value = (await AsyncStorage.getItem(key)) ?? null;
       return value ?? memoryFallback.get(key) ?? null;
@@ -41,20 +56,22 @@ const nativeStorage = {
     }
   },
   setItem: async (key: string, value: string) => {
+    memoryFallback.set(key, value);
+    if (!(await checkAsyncStorage())) return;
     try {
       await AsyncStorage.setItem(key, value);
     } catch {
-      /* Fallback en mémoire si AsyncStorage échoue */
+      /* Fallback mémoire déjà mis à jour */
     }
-    memoryFallback.set(key, value);
   },
   removeItem: async (key: string) => {
+    memoryFallback.delete(key);
+    if (!(await checkAsyncStorage())) return;
     try {
       await AsyncStorage.removeItem(key);
     } catch {
       /* ignore */
     }
-    memoryFallback.delete(key);
   },
 };
 

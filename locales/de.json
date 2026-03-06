@@ -120,5 +120,11 @@
   "language": {
     "chooseLanguage": "Sprache wählen",
     "applyToApp": "Die Sprache wird auf die gesamte Anwendung angewendet"
+  },
+  "notifications": {
+    "promptTitle": "Benachrichtigungen",
+    "promptMessage": "Erlaube Benachrichtigungen für Renn- und Nachrichten-Alerts.",
+    "promptLater": "Später",
+    "promptAllow": "Erlauben"
   }
 }

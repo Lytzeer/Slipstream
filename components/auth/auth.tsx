@@ -1,6 +1,7 @@
 "use client";
 
 import { colors } from "@/constants/theme";
+import { useNotifications } from "@/contexts/notifications-context";
 import {
   authController,
   extractTokensFromUrl,
@@ -42,6 +43,7 @@ export const AuthLink = ({
 // GoogleSignInButton
 export const GoogleSignInButton = (props: { onError?: (message?: string) => void }) => {
   const { t } = useTranslation();
+  const { requestPermissionAfterLogin } = useNotifications();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -84,6 +86,7 @@ export const GoogleSignInButton = (props: { onError?: (message?: string) => void
           }
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.replace("/(tabs)");
+          requestPermissionAfterLogin();
         } else {
           props.onError?.(t("auth.googleCancelled"));
         }

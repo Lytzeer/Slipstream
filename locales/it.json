@@ -120,5 +120,11 @@
   "language": {
     "chooseLanguage": "Scegli lingua",
     "applyToApp": "La lingua sarà applicata a tutta l'applicazione"
+  },
+  "notifications": {
+    "promptTitle": "Notifiche",
+    "promptMessage": "Consenti le notifiche per ricevere avvisi su gare e notizie.",
+    "promptLater": "Più tardi",
+    "promptAllow": "Consenti"
   }
 }

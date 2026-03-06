@@ -120,5 +120,11 @@
   "language": {
     "chooseLanguage": "Elegir idioma",
     "applyToApp": "El idioma se aplicará a toda la aplicación"
+  },
+  "notifications": {
+    "promptTitle": "Notificaciones",
+    "promptMessage": "Permite las notificaciones para recibir alertas de carreras y noticias.",
+    "promptLater": "Más tarde",
+    "promptAllow": "Permitir"
   }
 }

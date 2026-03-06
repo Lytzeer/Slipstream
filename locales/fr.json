@@ -120,5 +120,11 @@
   "language": {
     "chooseLanguage": "Choisir la langue",
     "applyToApp": "La langue sera appliquée à toute l'application"
+  },
+  "notifications": {
+    "promptTitle": "Notifications",
+    "promptMessage": "Autorisez les notifications pour recevoir les alertes courses et actualités.",
+    "promptLater": "Plus tard",
+    "promptAllow": "Autoriser"
   }
 }

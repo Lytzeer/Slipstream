@@ -8,6 +8,7 @@ import {
   authController,
   extractTokensFromUrl,
 } from "@/lib/controllers/auth.controller";
+import { requestNotificationPermission } from "@/lib/notifications";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -47,6 +48,9 @@ export default function AuthCallback() {
 
       setStatus("success");
       router.replace("/(tabs)");
+      setTimeout(() => {
+        requestNotificationPermission();
+      }, 3000);
     };
 
     let subscription: { remove: () => void } | null = null;

@@ -1,6 +1,7 @@
 import "@/lib/i18n";
 import { AuthProvider } from "@/contexts/auth-context";
 import { LanguageProvider } from "@/contexts/language-context";
+import { NotificationsProvider } from "@/contexts/notifications-context";
 import { ThemeProvider as AppThemeProvider, useTheme } from "@/contexts/theme-context";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
@@ -22,11 +23,13 @@ export default function RootLayout() {
       <AppThemeProvider>
         <LanguageProvider>
           <AuthProvider>
-            <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+            <NotificationsProvider>
+              <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
               <Stack.Screen name="index" options={{ animation: "none" }} />
               <Stack.Screen name="onBoarding" options={{ animation: "slide_from_left" }} />
             </Stack>
-            <StatusBarTheme />
+              <StatusBarTheme />
+            </NotificationsProvider>
           </AuthProvider>
         </LanguageProvider>
       </AppThemeProvider>
