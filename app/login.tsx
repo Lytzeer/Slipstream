@@ -12,9 +12,11 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Lock, Mail } from "lucide-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Login() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +24,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
-      setError("Veuillez remplir tous les champs");
+      setError(t("auth.fillAllFields"));
       return;
     }
 
@@ -40,7 +42,7 @@ export default function Login() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(
         signInError.message === "Invalid login credentials"
-          ? "Email ou mot de passe incorrect"
+          ? t("auth.invalidCredentials")
           : signInError.message
       );
       return;
@@ -52,11 +54,11 @@ export default function Login() {
 
   return (
     <AuthFormLayout>
-      <ScreenHeader title="Connexion" backHref="/onBoarding" />
+      <ScreenHeader title={t("auth.login")} backHref="/onBoarding" />
       <View style={styles.form}>
         <InputSection
-          inputTitle="Adresse email"
-          placeholder="your.mail@exemple.com"
+          inputTitle={t("auth.email")}
+          placeholder={t("auth.emailPlaceholder")}
           leftIcon={Mail}
           value={email}
           onChangeText={setEmail}
@@ -66,8 +68,8 @@ export default function Login() {
           textContentType="emailAddress"
         />
         <InputSection
-          inputTitle="Mot de passe"
-          placeholder="Votre mot de passe"
+          inputTitle={t("auth.password")}
+          placeholder={t("auth.passwordPlaceholder")}
           isPassword
           leftIcon={Lock}
           value={password}
@@ -77,21 +79,21 @@ export default function Login() {
         />
         {error && <Text style={styles.error}>{error}</Text>}
         <TouchableOpacity onPress={() => router.push("/forgot-password")}>
-          <Text style={styles.forgotLink}>Mot de passe oublié ?</Text>
+          <Text style={styles.forgotLink}>{t("auth.forgotPassword")}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttons}>
-        <DividerWithText />
+        <DividerWithText text={t("common.or")} />
         <GoogleSignInButton onError={(msg) => setError(msg ?? null)} />
         <Button
-          label="Se connecter"
+          label={t("auth.signIn")}
           variant="primary"
           loading={isLoading}
           onPress={handleLogin}
         />
         <AuthLink
-          prefix="Pas encore de compte ? "
-          linkText="Créer un compte"
+          prefix={t("auth.noAccount")}
+          linkText={t("auth.createAccountLink")}
           onPress={() => router.push("/create-account")}
         />
       </View>

@@ -1,15 +1,10 @@
 import { useTheme } from "@/contexts/theme-context";
+import type { Championship, Race } from "@/types";
 import { Image } from "expo-image";
 import { Bookmark, Clock } from "lucide-react-native";
 import React from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import ChampionshipBadge from "./championship";
-import type { Championship, Race } from "@/types";
 
 // InfoCard
 type InfoCardProps = {
@@ -37,7 +32,10 @@ export default function InfoCard({
   };
 
   return (
-    <Pressable style={[cardStyles.container, themed.container]} onPress={onPress}>
+    <Pressable
+      style={[cardStyles.container, themed.container]}
+      onPress={onPress}
+    >
       <View style={cardStyles.imageWrapper}>
         <Image source={image} style={cardStyles.image} contentFit="cover" />
       </View>
@@ -73,10 +71,21 @@ export const SavedArticleCard = ({
 }: SavedArticleCardProps) => {
   const { colors } = useTheme();
   return (
-    <View style={[cardStyles.savedCard, { backgroundColor: colors.surface }]}>
+    <View
+      style={[
+        cardStyles.savedCard,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       <Bookmark size={20} color={colors.primary} fill={colors.primary} />
       <View style={cardStyles.savedContent}>
-        <Text style={[cardStyles.savedTitle, { color: colors.text }]} numberOfLines={2}>
+        <Text
+          style={[cardStyles.savedTitle, { color: colors.text }]}
+          numberOfLines={2}
+        >
           {title}
         </Text>
         <Text style={[cardStyles.savedMeta, { color: colors.primary }]}>
@@ -93,21 +102,48 @@ type SectionCardProps = { children: React.ReactNode };
 export const SectionCard = ({ children }: SectionCardProps) => {
   const { colors } = useTheme();
   return (
-    <View style={[cardStyles.sectionCard, { backgroundColor: colors.surface }]}>
+    <View
+      style={[
+        cardStyles.sectionCard,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       {children}
     </View>
   );
 };
 
 // StatCard
-type StatCardProps = { value: string | number; label: string };
+type StatCardProps = {
+  value: string | number;
+  label: string;
+  color?: string;
+};
 
-export const StatCard = ({ value, label }: StatCardProps) => {
+export const StatCard = ({ value, label, color }: StatCardProps) => {
   const { colors } = useTheme();
+  const valueColor = color ?? colors.text;
   return (
-    <View style={[cardStyles.statCard, { backgroundColor: colors.surface }]}>
-      <Text style={[cardStyles.statValue, { color: colors.text }]}>{value}</Text>
-      <Text style={[cardStyles.statLabel, { color: colors.textMuted }]}>{label}</Text>
+    <View
+      style={[
+        cardStyles.statCard,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
+      <Text style={[cardStyles.statValue, { color: valueColor }]}>{value}</Text>
+      <Text
+        style={[cardStyles.statLabel, { color: colors.textMuted }]}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {label}
+      </Text>
     </View>
   );
 };
@@ -118,7 +154,10 @@ type UpcomingRaceCardProps = {
   race: Race;
 };
 
-export function UpcomingRaceCard({ championship, race }: UpcomingRaceCardProps) {
+export function UpcomingRaceCard({
+  championship,
+  race,
+}: UpcomingRaceCardProps) {
   const { colors } = useTheme();
   const themed = {
     container: { backgroundColor: colors.surface, borderColor: colors.border },
@@ -149,7 +188,7 @@ const cardStyles = StyleSheet.create({
     gap: 12,
     borderRadius: 12,
     overflow: "hidden",
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     marginTop: 16,
   },
   imageWrapper: { width: 112, height: 112, flexShrink: 0 },
@@ -177,20 +216,34 @@ const cardStyles = StyleSheet.create({
     gap: 12,
     borderRadius: 12,
     padding: 16,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   savedContent: { flex: 1 },
   savedTitle: { fontSize: 15, fontWeight: "500", lineHeight: 20 },
   savedMeta: { fontSize: 13, marginTop: 4 },
-  sectionCard: { borderRadius: 12, marginBottom: 24, overflow: "hidden" },
+  sectionCard: {
+    borderRadius: 12,
+    marginBottom: 24,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
   statCard: {
     flex: 1,
+    minWidth: 0,
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  statValue: { fontSize: 28 },
+  statLabel: { fontSize: 12, marginTop: 4, textAlign: "center" },
+  upcomingContainer: {
     borderRadius: 12,
     padding: 16,
-    alignItems: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    marginTop: 16,
   },
-  statValue: { fontSize: 28, fontWeight: "bold" },
-  statLabel: { fontSize: 12, marginTop: 4 },
-  upcomingContainer: { borderRadius: 12, padding: 16, borderWidth: 1, marginTop: 16 },
   upcomingRow: {
     flexDirection: "row",
     alignItems: "flex-start",

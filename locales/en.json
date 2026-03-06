@@ -1,0 +1,124 @@
+{
+  "common": {
+    "appName": "Slipstream",
+    "seeAll": "See all",
+    "apply": "Apply",
+    "or": "or",
+    "guest": "Guest",
+    "user": "User"
+  },
+  "home": {
+    "featured": "Featured",
+    "lastNews": "Latest news",
+    "upcomingRaces": "Upcoming races",
+    "featuredArticle": "Looking back at the historic 24 Hours of Le Mans victory",
+    "readTime": "{{count}} min read",
+    "article1Title": "Technical analysis: The secrets of the Ferrari 499P",
+    "article1Category": "Analysis",
+    "article2Title": "Next race at Monza: Preview and favourites",
+    "article2Category": "Le Mans Cup",
+    "race1Name": "4 Hours of Castellet",
+    "race1Date": "May 3, 2026",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Hours of Imola",
+    "race2Date": "July 5, 2026",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari"
+  },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover motorsport news"
+  },
+  "profile": {
+    "title": "Profile",
+    "articlesRead": "Articles read",
+    "championships": "Championships",
+    "saved": "Saved",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "notificationsSubtitle": "Races and news",
+    "darkMode": "Dark mode",
+    "darkModeOn": "On",
+    "darkModeOff": "Off",
+    "language": "Language",
+    "followedChampionships": "Followed championships",
+    "savedArticles": "Saved articles",
+    "other": "Other",
+    "advancedSettings": "Advanced settings",
+    "about": "About",
+    "memberSince": "Member since {{month}} {{year}}"
+  },
+  "championships": {
+    "ELMS": "ELMS",
+    "LMC": "Le Mans Cup",
+    "GTWORLD": "GT World"
+  },
+  "articles": {
+    "saved1": "Looking back at the historic 24 Hours of Le Mans victory",
+    "saved1Date": "Dec 24, 2024",
+    "saved2": "Technical analysis: The secrets of the Ferrari 499P",
+    "saved2Date": "Dec 23, 2024",
+    "saved3": "Exclusive interview: The champion driver speaks to us",
+    "saved3Date": "Dec 22, 2024"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "auth": {
+    "login": "Login",
+    "signUp": "Sign up",
+    "createAccount": "Create account",
+    "email": "Email address",
+    "emailPlaceholder": "your.mail@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Your full name",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "signIn": "Sign in",
+    "signUpButton": "Sign up",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "No account yet? ",
+    "hasAccount": "Already have an account? ",
+    "createAccountLink": "Create account",
+    "signInLink": "Sign in",
+    "continueWithGoogle": "Continue with Google",
+    "fillAllFields": "Please fill in all fields",
+    "invalidCredentials": "Invalid email or password",
+    "passwordsNotMatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 6 characters",
+    "googleError": "Error during Google sign-in",
+    "googleCancelled": "Google sign-in cancelled",
+    "forgotPasswordTitle": "Forgot password",
+    "emailSent": "Email sent",
+    "resetInstructions": "A password reset link has been sent to",
+    "resetInstructionsEnd": "Check your inbox and follow the instructions to set a new password.",
+    "backToLogin": "Back to login",
+    "enterEmail": "Enter your email address and we will send you a link to reset your password.",
+    "sendLink": "Send link",
+    "enterEmailError": "Please enter your email address"
+  },
+  "onboarding": {
+    "subtitle": "Endurance motorsport news."
+  },
+  "tabs": {
+    "home": "Home",
+    "explore": "Explore",
+    "profile": "Profile"
+  },
+  "language": {
+    "chooseLanguage": "Choose language",
+    "applyToApp": "The language will be applied to the entire application"
+  }
+}

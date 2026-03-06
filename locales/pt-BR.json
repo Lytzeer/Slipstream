@@ -1,0 +1,124 @@
+{
+  "common": {
+    "appName": "Slipstream",
+    "seeAll": "Ver tudo",
+    "apply": "Aplicar",
+    "or": "ou",
+    "guest": "Convidado",
+    "user": "Usuário"
+  },
+  "home": {
+    "featured": "Em destaque",
+    "lastNews": "Últimas notícias",
+    "upcomingRaces": "Próximas corridas",
+    "featuredArticle": "Retrospectiva da vitória histórica nas 24h de Le Mans",
+    "readTime": "{{count}} min de leitura",
+    "article1Title": "Análise técnica: Os segredos da Ferrari 499P",
+    "article1Category": "Análise",
+    "article2Title": "Próxima corrida em Monza: Prévia e favoritos",
+    "article2Category": "Le Mans Cup",
+    "race1Name": "4 Horas de Castellet",
+    "race1Date": "03 Mai 2026",
+    "race1Circuit": "Circuito Paul Ricard",
+    "race2Name": "4 Horas de Imola",
+    "race2Date": "05 Jul 2026",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari"
+  },
+  "explore": {
+    "title": "Explorar",
+    "subtitle": "Descubra as notícias do automobilismo"
+  },
+  "profile": {
+    "title": "Perfil",
+    "articlesRead": "Artigos lidos",
+    "championships": "Campeonatos",
+    "saved": "Salvos",
+    "settings": "Configurações",
+    "notifications": "Notificações",
+    "notificationsSubtitle": "Corridas e notícias",
+    "darkMode": "Modo escuro",
+    "darkModeOn": "Ativado",
+    "darkModeOff": "Desativado",
+    "language": "Idioma",
+    "followedChampionships": "Campeonatos seguidos",
+    "savedArticles": "Artigos salvos",
+    "other": "Outros",
+    "advancedSettings": "Configurações avançadas",
+    "about": "Sobre",
+    "memberSince": "Membro desde {{month}} {{year}}"
+  },
+  "championships": {
+    "ELMS": "ELMS",
+    "LMC": "Le Mans Cup",
+    "GTWORLD": "GT World"
+  },
+  "articles": {
+    "saved1": "Retrospectiva da vitória histórica nas 24H de Le Mans",
+    "saved1Date": "24 Dez 2024",
+    "saved2": "Análise técnica: Os segredos da Ferrari 499P",
+    "saved2Date": "23 Dez 2024",
+    "saved3": "Entrevista exclusiva: O piloto campeão nos fala",
+    "saved3Date": "22 Dez 2024"
+  },
+  "months": {
+    "january": "Janeiro",
+    "february": "Fevereiro",
+    "march": "Março",
+    "april": "Abril",
+    "may": "Maio",
+    "june": "Junho",
+    "july": "Julho",
+    "august": "Agosto",
+    "september": "Setembro",
+    "october": "Outubro",
+    "november": "Novembro",
+    "december": "Dezembro"
+  },
+  "auth": {
+    "login": "Entrar",
+    "signUp": "Cadastrar",
+    "createAccount": "Criar conta",
+    "email": "Endereço de email",
+    "emailPlaceholder": "seu.email@exemplo.com",
+    "password": "Senha",
+    "passwordPlaceholder": "Sua senha",
+    "fullName": "Nome completo",
+    "fullNamePlaceholder": "Seu nome completo",
+    "confirmPassword": "Confirmar senha",
+    "confirmPasswordPlaceholder": "Confirme sua senha",
+    "signIn": "Entrar",
+    "signUpButton": "Cadastrar",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Ainda não tem conta? ",
+    "hasAccount": "Já tem uma conta? ",
+    "createAccountLink": "Criar conta",
+    "signInLink": "Entrar",
+    "continueWithGoogle": "Continuar com Google",
+    "fillAllFields": "Por favor preencha todos os campos",
+    "invalidCredentials": "Email ou senha incorretos",
+    "passwordsNotMatch": "As senhas não coincidem",
+    "passwordMinLength": "A senha deve ter pelo menos 6 caracteres",
+    "googleError": "Erro ao conectar com Google",
+    "googleCancelled": "Conexão com Google cancelada",
+    "forgotPasswordTitle": "Esqueceu a senha",
+    "emailSent": "Email enviado",
+    "resetInstructions": "Um link de redefinição foi enviado para",
+    "resetInstructionsEnd": "Verifique sua caixa de entrada e siga as instruções para definir uma nova senha.",
+    "backToLogin": "Voltar ao login",
+    "enterEmail": "Digite seu email e enviaremos um link para redefinir sua senha.",
+    "sendLink": "Enviar link",
+    "enterEmailError": "Por favor digite seu endereço de email"
+  },
+  "onboarding": {
+    "subtitle": "As notícias do automobilismo de resistência."
+  },
+  "tabs": {
+    "home": "Início",
+    "explore": "Explorar",
+    "profile": "Perfil"
+  },
+  "language": {
+    "chooseLanguage": "Escolher idioma",
+    "applyToApp": "O idioma será aplicado a todo o aplicativo"
+  }
+}

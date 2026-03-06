@@ -6,11 +6,13 @@
  */
 
 import type { User } from "@supabase/supabase-js";
+import type { TFunction } from "i18next";
 
-const MONTHS_FR = [
-  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
-];
+const MONTH_KEYS = [
+  "months.january", "months.february", "months.march", "months.april",
+  "months.may", "months.june", "months.july", "months.august",
+  "months.september", "months.october", "months.november", "months.december",
+] as const;
 
 function getMetadata(user: User | null): Record<string, unknown> | null {
   if (!user) return null;
@@ -22,22 +24,28 @@ function getMetadata(user: User | null): Record<string, unknown> | null {
   );
 }
 
-export const formatMemberSince = (dateString: string): string => {
+export const formatMemberSince = (
+  dateString: string,
+  t: TFunction
+): string => {
   const date = new Date(dateString);
-  const month = MONTHS_FR[date.getMonth()];
+  const month = t(MONTH_KEYS[date.getMonth()]);
   const year = date.getFullYear();
-  return `Membre depuis ${month} ${year}`;
+  return t("profile.memberSince", { month, year });
 };
 
-export const getDisplayName = (user: User | null): string => {
-  if (!user) return "Invité";
+export const getDisplayName = (
+  user: User | null,
+  t?: TFunction
+): string => {
+  if (!user) return t ? t("common.guest") : "Invité";
   const metadata = getMetadata(user);
   return (
     (metadata?.full_name as string) ??
     (metadata?.name as string) ??
     (metadata?.user_name as string) ??
     user.email?.split("@")[0] ??
-    "Utilisateur"
+    (t ? t("common.user") : "Utilisateur")
   );
 };
 
@@ -55,13 +63,19 @@ export type ProfileUser = {
   email: string | null;
 };
 
-export const toProfileUser = (user: User | null): ProfileUser | null => {
+export const toProfileUser = (
+  user: User | null,
+  t?: TFunction
+): ProfileUser | null => {
   if (!user) return null;
   return {
     id: user.id,
-    displayName: getDisplayName(user),
+    displayName: getDisplayName(user, t),
     avatarUrl: getAvatarUrl(user),
-    memberSince: user.created_at ? formatMemberSince(user.created_at) : null,
+    memberSince:
+      user.created_at && t
+        ? formatMemberSince(user.created_at, t)
+        : null,
     email: user.email ?? null,
   };
 };

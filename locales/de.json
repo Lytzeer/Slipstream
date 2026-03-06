@@ -1,0 +1,124 @@
+{
+  "common": {
+    "appName": "Slipstream",
+    "seeAll": "Alle anzeigen",
+    "apply": "Anwenden",
+    "or": "oder",
+    "guest": "Gast",
+    "user": "Benutzer"
+  },
+  "home": {
+    "featured": "Im Fokus",
+    "lastNews": "Neueste Nachrichten",
+    "upcomingRaces": "Kommende Rennen",
+    "featuredArticle": "Rückblick auf den historischen Sieg bei den 24h von Le Mans",
+    "readTime": "{{count}} Min. Lesezeit",
+    "article1Title": "Technische Analyse: Die Geheimnisse des Ferrari 499P",
+    "article1Category": "Analyse",
+    "article2Title": "Nächstes Rennen in Monza: Vorschau und Favoriten",
+    "article2Category": "Le Mans Cup",
+    "race1Name": "4 Stunden von Castellet",
+    "race1Date": "3. Mai 2026",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Stunden von Imola",
+    "race2Date": "5. Juli 2026",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari"
+  },
+  "explore": {
+    "title": "Entdecken",
+    "subtitle": "Entdecke die Motorsportnachrichten"
+  },
+  "profile": {
+    "title": "Profil",
+    "articlesRead": "Gelesene Artikel",
+    "championships": "Meisterschaften",
+    "saved": "Gespeichert",
+    "settings": "Einstellungen",
+    "notifications": "Benachrichtigungen",
+    "notificationsSubtitle": "Rennen und Nachrichten",
+    "darkMode": "Dunkelmodus",
+    "darkModeOn": "An",
+    "darkModeOff": "Aus",
+    "language": "Sprache",
+    "followedChampionships": "Gefolgte Meisterschaften",
+    "savedArticles": "Gespeicherte Artikel",
+    "other": "Sonstiges",
+    "advancedSettings": "Erweiterte Einstellungen",
+    "about": "Über",
+    "memberSince": "Mitglied seit {{month}} {{year}}"
+  },
+  "championships": {
+    "ELMS": "ELMS",
+    "LMC": "Le Mans Cup",
+    "GTWORLD": "GT World"
+  },
+  "articles": {
+    "saved1": "Rückblick auf den historischen Sieg bei den 24h von Le Mans",
+    "saved1Date": "24. Dez 2024",
+    "saved2": "Technische Analyse: Die Geheimnisse des Ferrari 499P",
+    "saved2Date": "23. Dez 2024",
+    "saved3": "Exklusives Interview: Der Champion-Fahrer spricht mit uns",
+    "saved3Date": "22. Dez 2024"
+  },
+  "months": {
+    "january": "Januar",
+    "february": "Februar",
+    "march": "März",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "signUp": "Registrieren",
+    "createAccount": "Konto erstellen",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "deine.mail@beispiel.de",
+    "password": "Passwort",
+    "passwordPlaceholder": "Dein Passwort",
+    "fullName": "Vollständiger Name",
+    "fullNamePlaceholder": "Dein vollständiger Name",
+    "confirmPassword": "Passwort bestätigen",
+    "confirmPasswordPlaceholder": "Bestätige dein Passwort",
+    "signIn": "Anmelden",
+    "signUpButton": "Registrieren",
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Noch kein Konto? ",
+    "hasAccount": "Bereits ein Konto? ",
+    "createAccountLink": "Konto erstellen",
+    "signInLink": "Anmelden",
+    "continueWithGoogle": "Mit Google fortfahren",
+    "fillAllFields": "Bitte fülle alle Felder aus",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "passwordsNotMatch": "Passwörter stimmen nicht überein",
+    "passwordMinLength": "Das Passwort muss mindestens 6 Zeichen haben",
+    "googleError": "Fehler bei der Google-Anmeldung",
+    "googleCancelled": "Google-Anmeldung abgebrochen",
+    "forgotPasswordTitle": "Passwort vergessen",
+    "emailSent": "E-Mail gesendet",
+    "resetInstructions": "Ein Link zum Zurücksetzen des Passworts wurde gesendet an",
+    "resetInstructionsEnd": "Überprüfe deinen Posteingang und folge den Anweisungen, um ein neues Passwort festzulegen.",
+    "backToLogin": "Zurück zur Anmeldung",
+    "enterEmail": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen deines Passworts.",
+    "sendLink": "Link senden",
+    "enterEmailError": "Bitte gib deine E-Mail-Adresse ein"
+  },
+  "onboarding": {
+    "subtitle": "Die Nachrichten des Ausdauersports."
+  },
+  "tabs": {
+    "home": "Start",
+    "explore": "Entdecken",
+    "profile": "Profil"
+  },
+  "language": {
+    "chooseLanguage": "Sprache wählen",
+    "applyToApp": "Die Sprache wird auf die gesamte Anwendung angewendet"
+  }
+}

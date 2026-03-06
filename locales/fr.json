@@ -1,0 +1,124 @@
+{
+  "common": {
+    "appName": "Slipstream",
+    "seeAll": "Voir tout",
+    "apply": "Appliquer",
+    "or": "ou",
+    "guest": "Invité",
+    "user": "Utilisateur"
+  },
+  "home": {
+    "featured": "À la une",
+    "lastNews": "Dernières actualités",
+    "upcomingRaces": "Prochaines courses",
+    "featuredArticle": "Retour sur la victoire historique aux 24h du Mans",
+    "readTime": "{{count}} min de lecture",
+    "article1Title": "Analyse technique : Les secrets de la Ferrari 499P",
+    "article1Category": "Analyse",
+    "article2Title": "Prochaine course à Monza : Preview et favoris",
+    "article2Category": "Le Mans Cup",
+    "race1Name": "4 Heures du Castellet",
+    "race1Date": "03 Mai 2026",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Heures d'Imola",
+    "race2Date": "05 Juillet 2026",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari"
+  },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Découvrez les actualités du sport automobile"
+  },
+  "profile": {
+    "title": "Profil",
+    "articlesRead": "Articles lus",
+    "championships": "Championnats",
+    "saved": "Sauvegardés",
+    "settings": "Paramètres",
+    "notifications": "Notifications",
+    "notificationsSubtitle": "Courses et actualités",
+    "darkMode": "Mode sombre",
+    "darkModeOn": "Activé",
+    "darkModeOff": "Désactivé",
+    "language": "Langue",
+    "followedChampionships": "Championnats suivis",
+    "savedArticles": "Articles sauvegardés",
+    "other": "Autres",
+    "advancedSettings": "Paramètres avancés",
+    "about": "À propos",
+    "memberSince": "Membre depuis {{month}} {{year}}"
+  },
+  "championships": {
+    "ELMS": "ELMS",
+    "LMC": "Le Mans Cup",
+    "GTWORLD": "GT World"
+  },
+  "articles": {
+    "saved1": "Retour sur la victoire historique aux 24H du Mans",
+    "saved1Date": "24 Déc 2024",
+    "saved2": "Analyse technique : Les secrets de la Ferrari 499P",
+    "saved2Date": "23 Déc 2024",
+    "saved3": "Interview exclusive : Le pilote champion nous parle",
+    "saved3Date": "22 Déc 2024"
+  },
+  "months": {
+    "january": "Janvier",
+    "february": "Février",
+    "march": "Mars",
+    "april": "Avril",
+    "may": "Mai",
+    "june": "Juin",
+    "july": "Juillet",
+    "august": "Août",
+    "september": "Septembre",
+    "october": "Octobre",
+    "november": "Novembre",
+    "december": "Décembre"
+  },
+  "auth": {
+    "login": "Connexion",
+    "signUp": "Inscription",
+    "createAccount": "Créer un compte",
+    "email": "Adresse email",
+    "emailPlaceholder": "your.mail@exemple.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe",
+    "fullName": "Nom complet",
+    "fullNamePlaceholder": "Votre nom complet",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+    "signIn": "Se connecter",
+    "signUpButton": "S'inscrire",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ? ",
+    "hasAccount": "Déjà un compte ? ",
+    "createAccountLink": "Créer un compte",
+    "signInLink": "Se connecter",
+    "continueWithGoogle": "Continuer avec Google",
+    "fillAllFields": "Veuillez remplir tous les champs",
+    "invalidCredentials": "Email ou mot de passe incorrect",
+    "passwordsNotMatch": "Les mots de passe ne correspondent pas",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
+    "googleError": "Erreur lors de la connexion Google",
+    "googleCancelled": "Connexion Google annulée",
+    "forgotPasswordTitle": "Mot de passe oublié",
+    "emailSent": "Email envoyé",
+    "resetInstructions": "Un lien de réinitialisation a été envoyé à",
+    "resetInstructionsEnd": "Vérifiez votre boîte de réception et suivez les instructions pour définir un nouveau mot de passe.",
+    "backToLogin": "Retour à la connexion",
+    "enterEmail": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "sendLink": "Envoyer le lien",
+    "enterEmailError": "Veuillez entrer votre adresse email"
+  },
+  "onboarding": {
+    "subtitle": "L'actualité du sport automobile d'endurance."
+  },
+  "tabs": {
+    "home": "Home",
+    "explore": "Explore",
+    "profile": "Profil"
+  },
+  "language": {
+    "chooseLanguage": "Choisir la langue",
+    "applyToApp": "La langue sera appliquée à toute l'application"
+  }
+}

@@ -10,6 +10,7 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -40,6 +41,7 @@ export const AuthLink = ({
 
 // GoogleSignInButton
 export const GoogleSignInButton = (props: { onError?: (message?: string) => void }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export const GoogleSignInButton = (props: { onError?: (message?: string) => void
       }
       const googleOAuthUrl = data.url;
       if (!googleOAuthUrl) {
-        props.onError?.("Erreur lors de la connexion Google");
+        props.onError?.(t("auth.googleError"));
         return;
       }
       const result = await WebBrowser.openAuthSessionAsync(
@@ -83,12 +85,12 @@ export const GoogleSignInButton = (props: { onError?: (message?: string) => void
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.replace("/(tabs)");
         } else {
-          props.onError?.("Connexion Google annulée");
+          props.onError?.(t("auth.googleCancelled"));
         }
       }
     } catch (err) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      props.onError?.(err instanceof Error ? err.message : "Erreur lors de la connexion");
+      props.onError?.(err instanceof Error ? err.message : t("auth.googleError"));
     } finally {
       setIsLoading(false);
     }
@@ -108,7 +110,7 @@ export const GoogleSignInButton = (props: { onError?: (message?: string) => void
           <View style={authStyles.googleIcon}>
             <Text style={authStyles.googleG}>G</Text>
           </View>
-          <Text style={authStyles.googleLabel}>Continuer avec Google</Text>
+          <Text style={authStyles.googleLabel}>{t("auth.continueWithGoogle")}</Text>
         </>
       )}
     </TouchableOpacity>

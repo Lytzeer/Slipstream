@@ -1,0 +1,124 @@
+{
+  "common": {
+    "appName": "Slipstream",
+    "seeAll": "Ver todo",
+    "apply": "Aplicar",
+    "or": "o",
+    "guest": "Invitado",
+    "user": "Usuario"
+  },
+  "home": {
+    "featured": "Destacado",
+    "lastNews": "Últimas noticias",
+    "upcomingRaces": "Próximas carreras",
+    "featuredArticle": "Repaso de la victoria histórica en las 24h de Le Mans",
+    "readTime": "{{count}} min de lectura",
+    "article1Title": "Análisis técnico: Los secretos del Ferrari 499P",
+    "article1Category": "Análisis",
+    "article2Title": "Próxima carrera en Monza: Avance y favoritos",
+    "article2Category": "Le Mans Cup",
+    "race1Name": "4 Horas de Castellet",
+    "race1Date": "3 Mayo 2026",
+    "race1Circuit": "Circuito Paul Ricard",
+    "race2Name": "4 Horas de Imola",
+    "race2Date": "5 Julio 2026",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari"
+  },
+  "explore": {
+    "title": "Explorar",
+    "subtitle": "Descubre las noticias del motor"
+  },
+  "profile": {
+    "title": "Perfil",
+    "articlesRead": "Artículos leídos",
+    "championships": "Campeonatos",
+    "saved": "Guardados",
+    "settings": "Ajustes",
+    "notifications": "Notificaciones",
+    "notificationsSubtitle": "Carreras y noticias",
+    "darkMode": "Modo oscuro",
+    "darkModeOn": "Activado",
+    "darkModeOff": "Desactivado",
+    "language": "Idioma",
+    "followedChampionships": "Campeonatos seguidos",
+    "savedArticles": "Artículos guardados",
+    "other": "Otros",
+    "advancedSettings": "Ajustes avanzados",
+    "about": "Acerca de",
+    "memberSince": "Miembro desde {{month}} {{year}}"
+  },
+  "championships": {
+    "ELMS": "ELMS",
+    "LMC": "Le Mans Cup",
+    "GTWORLD": "GT World"
+  },
+  "articles": {
+    "saved1": "Repaso de la victoria histórica en las 24H de Le Mans",
+    "saved1Date": "24 Dic 2024",
+    "saved2": "Análisis técnico: Los secretos del Ferrari 499P",
+    "saved2Date": "23 Dic 2024",
+    "saved3": "Entrevista exclusiva: El piloto campeón nos habla",
+    "saved3Date": "22 Dic 2024"
+  },
+  "months": {
+    "january": "Enero",
+    "february": "Febrero",
+    "march": "Marzo",
+    "april": "Abril",
+    "may": "Mayo",
+    "june": "Junio",
+    "july": "Julio",
+    "august": "Agosto",
+    "september": "Septiembre",
+    "october": "Octubre",
+    "november": "Noviembre",
+    "december": "Diciembre"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "createAccount": "Crear cuenta",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu.correo@ejemplo.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Tu contraseña",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Tu nombre completo",
+    "confirmPassword": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "Confirma tu contraseña",
+    "signIn": "Iniciar sesión",
+    "signUpButton": "Registrarse",
+    "forgotPassword": "¿Olvidaste contraseña?",
+    "noAccount": "¿No tienes cuenta? ",
+    "hasAccount": "¿Ya tienes cuenta? ",
+    "createAccountLink": "Crear cuenta",
+    "signInLink": "Iniciar sesión",
+    "continueWithGoogle": "Continuar con Google",
+    "fillAllFields": "Por favor completa todos los campos",
+    "invalidCredentials": "Email o contraseña incorrectos",
+    "passwordsNotMatch": "Las contraseñas no coinciden",
+    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+    "googleError": "Error al conectar con Google",
+    "googleCancelled": "Conexión con Google cancelada",
+    "forgotPasswordTitle": "Olvidaste contraseña",
+    "emailSent": "Email enviado",
+    "resetInstructions": "Se ha enviado un enlace de restablecimiento a",
+    "resetInstructionsEnd": "Revisa tu bandeja de entrada y sigue las instrucciones para establecer una nueva contraseña.",
+    "backToLogin": "Volver al inicio de sesión",
+    "enterEmail": "Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+    "sendLink": "Enviar enlace",
+    "enterEmailError": "Por favor introduce tu correo electrónico"
+  },
+  "onboarding": {
+    "subtitle": "Las noticias del automovilismo de resistencia."
+  },
+  "tabs": {
+    "home": "Inicio",
+    "explore": "Explorar",
+    "profile": "Perfil"
+  },
+  "language": {
+    "chooseLanguage": "Elegir idioma",
+    "applyToApp": "El idioma se aplicará a toda la aplicación"
+  }
+}

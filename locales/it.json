@@ -1,0 +1,124 @@
+{
+  "common": {
+    "appName": "Slipstream",
+    "seeAll": "Vedi tutto",
+    "apply": "Applica",
+    "or": "o",
+    "guest": "Ospite",
+    "user": "Utente"
+  },
+  "home": {
+    "featured": "In evidenza",
+    "lastNews": "Ultime notizie",
+    "upcomingRaces": "Prossime gare",
+    "featuredArticle": "Ritorno sulla vittoria storica alle 24h di Le Mans",
+    "readTime": "{{count}} min di lettura",
+    "article1Title": "Analisi tecnica: I segreti della Ferrari 499P",
+    "article1Category": "Analisi",
+    "article2Title": "Prossima gara a Monza: Anteprima e favoriti",
+    "article2Category": "Le Mans Cup",
+    "race1Name": "4 Ore del Castellet",
+    "race1Date": "3 Maggio 2026",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Ore di Imola",
+    "race2Date": "5 Luglio 2026",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari"
+  },
+  "explore": {
+    "title": "Esplora",
+    "subtitle": "Scopri le notizie del motorsport"
+  },
+  "profile": {
+    "title": "Profilo",
+    "articlesRead": "Articoli letti",
+    "championships": "Campionati",
+    "saved": "Salvati",
+    "settings": "Impostazioni",
+    "notifications": "Notifiche",
+    "notificationsSubtitle": "Gare e notizie",
+    "darkMode": "Modalità scura",
+    "darkModeOn": "Attivato",
+    "darkModeOff": "Disattivato",
+    "language": "Lingua",
+    "followedChampionships": "Campionati seguiti",
+    "savedArticles": "Articoli salvati",
+    "other": "Altro",
+    "advancedSettings": "Impostazioni avanzate",
+    "about": "Informazioni",
+    "memberSince": "Membro dal {{month}} {{year}}"
+  },
+  "championships": {
+    "ELMS": "ELMS",
+    "LMC": "Le Mans Cup",
+    "GTWORLD": "GT World"
+  },
+  "articles": {
+    "saved1": "Ritorno sulla vittoria storica alle 24H di Le Mans",
+    "saved1Date": "24 Dic 2024",
+    "saved2": "Analisi tecnica: I segreti della Ferrari 499P",
+    "saved2Date": "23 Dic 2024",
+    "saved3": "Intervista esclusiva: Il pilota campione ci parla",
+    "saved3Date": "22 Dic 2024"
+  },
+  "months": {
+    "january": "Gennaio",
+    "february": "Febbraio",
+    "march": "Marzo",
+    "april": "Aprile",
+    "may": "Maggio",
+    "june": "Giugno",
+    "july": "Luglio",
+    "august": "Agosto",
+    "september": "Settembre",
+    "october": "Ottobre",
+    "november": "Novembre",
+    "december": "Dicembre"
+  },
+  "auth": {
+    "login": "Accedi",
+    "signUp": "Registrati",
+    "createAccount": "Crea account",
+    "email": "Indirizzo email",
+    "emailPlaceholder": "tua.mail@esempio.com",
+    "password": "Password",
+    "passwordPlaceholder": "La tua password",
+    "fullName": "Nome completo",
+    "fullNamePlaceholder": "Il tuo nome completo",
+    "confirmPassword": "Conferma password",
+    "confirmPasswordPlaceholder": "Conferma la tua password",
+    "signIn": "Accedi",
+    "signUpButton": "Registrati",
+    "forgotPassword": "Password dimenticata?",
+    "noAccount": "Non hai ancora un account? ",
+    "hasAccount": "Hai già un account? ",
+    "createAccountLink": "Crea account",
+    "signInLink": "Accedi",
+    "continueWithGoogle": "Continua con Google",
+    "fillAllFields": "Compila tutti i campi",
+    "invalidCredentials": "Email o password non corretti",
+    "passwordsNotMatch": "Le password non corrispondono",
+    "passwordMinLength": "La password deve contenere almeno 6 caratteri",
+    "googleError": "Errore durante l'accesso con Google",
+    "googleCancelled": "Accesso Google annullato",
+    "forgotPasswordTitle": "Password dimenticata",
+    "emailSent": "Email inviata",
+    "resetInstructions": "Un link per reimpostare la password è stato inviato a",
+    "resetInstructionsEnd": "Controlla la tua casella di posta e segui le istruzioni per impostare una nuova password.",
+    "backToLogin": "Torna all'accesso",
+    "enterEmail": "Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password.",
+    "sendLink": "Invia link",
+    "enterEmailError": "Inserisci il tuo indirizzo email"
+  },
+  "onboarding": {
+    "subtitle": "Le notizie del motorsport di endurance."
+  },
+  "tabs": {
+    "home": "Home",
+    "explore": "Esplora",
+    "profile": "Profilo"
+  },
+  "language": {
+    "chooseLanguage": "Scegli lingua",
+    "applyToApp": "La lingua sarà applicata a tutta l'applicazione"
+  }
+}

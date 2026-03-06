@@ -4,23 +4,26 @@ import {
   InfoCard,
   UpcomingRaceCard,
 } from "@/components/ui";
+import { championshipsList as championshipsRaw } from "@/constants/mock-data";
 import { useTheme } from "@/contexts/theme-context";
 import { ImageBackground } from "expo-image";
 import { ChevronRight, Clock } from "lucide-react-native";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [selectedChampionship, setSelectedChampionship] = useState<
     string | null
   >("ELMS");
 
-  const championshipsList = [
-    { id: "ELMS", name: "ELMS", color: "#FF3B31" },
-    { id: "LMC", name: "Le Mans Cup", color: "#FF9502" },
-    { id: "GTWORLD", name: "GT World", color: "#31D158" },
-  ];
+  const championshipsList = championshipsRaw.map((c) => ({
+    id: c.id,
+    name: t(c.nameKey),
+    color: c.color,
+  }));
 
   return (
     <ScrollView
@@ -28,7 +31,9 @@ export default function HomeScreen() {
       contentContainerStyle={styles.scrollView}
     >
       <View id="titleSection">
-        <Text style={[styles.title, { color: colors.text }]}>Slipstream</Text>
+        <Text style={[styles.title, { color: colors.text }]}>
+          {t("common.appName")}
+        </Text>
       </View>
       <ChampionshipSelector
         championships={championshipsList}
@@ -38,10 +43,10 @@ export default function HomeScreen() {
       <View id="featuredContentSection">
         <View style={styles.featuredHeaderContent}>
           <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
-            À la une
+            {t("home.featured")}
           </Text>
           <View style={styles.featuredSeeAll}>
-            <Text style={styles.featuredSeeAllText}>Voir tout</Text>
+            <Text style={styles.featuredSeeAllText}>{t("common.seeAll")}</Text>
             <ChevronRight color="#FF3B31" size={20} />
           </View>
         </View>
@@ -50,52 +55,54 @@ export default function HomeScreen() {
           style={styles.featuredImage}
         >
           <ChampionshipBadge
-            champ={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
+            champ={{ id: "ELMS", name: t("championships.ELMS"), color: "#FF3B31" }}
           />
           <Text style={styles.featuredImageText}>
-            Retour sur la victoire historique aux 24h du Mans
+            {t("home.featuredArticle")}
           </Text>
           <View style={styles.featuredImageSubTextContainer}>
             <Clock color="white" size={14} />
-            <Text style={styles.featuredImageSubText}>8 min de lecture</Text>
+            <Text style={styles.featuredImageSubText}>
+              {t("home.readTime", { count: 8 })}
+            </Text>
           </View>
         </ImageBackground>
       </View>
       <View id="lastActivitySection" style={{ marginTop: 40 }}>
         <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
-          Dernières actualités
+          {t("home.lastNews")}
         </Text>
         <InfoCard
           image={require("@/assets/images/info/info1.png")}
-          category="Analyse"
-          title="Analyse technique : Les secrets de la Ferrari 499P"
+          category={t("home.article1Category")}
+          title={t("home.article1Title")}
           readTime="12 min"
         />
         <InfoCard
           image={require("@/assets/images/info/info1.png")}
-          category="Le Mans Cup"
-          title="Prochaine course à Monza : Preview et favoris"
+          category={t("home.article2Category")}
+          title={t("home.article2Title")}
           readTime="6 min"
         />
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
         <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
-          Prochaines courses
+          {t("home.upcomingRaces")}
         </Text>
         <UpcomingRaceCard
-          championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
+          championship={{ id: "ELMS", name: t("championships.ELMS"), color: "#FF3B31" }}
           race={{
-            name: "4 Heures du Castellet",
-            date: "03 Mai 2026",
-            circuit: "Circuit Paul Ricard",
+            name: t("home.race1Name"),
+            date: t("home.race1Date"),
+            circuit: t("home.race1Circuit"),
           }}
         />
         <UpcomingRaceCard
-          championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
+          championship={{ id: "ELMS", name: t("championships.ELMS"), color: "#FF3B31" }}
           race={{
-            name: "4 Heures d'Imola",
-            date: "05 Juillet 2026",
-            circuit: "Autodromo Enzo e Dino Ferrari",
+            name: t("home.race2Name"),
+            date: t("home.race2Date"),
+            circuit: t("home.race2Circuit"),
           }}
         />
       </View>

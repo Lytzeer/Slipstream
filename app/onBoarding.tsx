@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui";
 import { router } from "expo-router";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 
 export default function OnBoarding() {
+  const { t } = useTranslation();
   return (
     <ImageBackground
       source={require("@/assets/images/onBoarding/background.jpg")}
@@ -11,25 +13,18 @@ export default function OnBoarding() {
     >
       <View style={styles.overlay} />
       <View style={styles.contentSection}>
-        <Text style={styles.title}>Slipstream</Text>
-        <Text style={styles.subtitle}>
-          L'actualité du sport automobile d'endurance.
-        </Text>
+        <Text style={styles.title}>{t("common.appName")}</Text>
+        <Text style={styles.subtitle}>{t("onboarding.subtitle")}</Text>
         <View style={styles.buttonsContainer}>
           <Button
-            label="Créer un compte"
+            label={t("auth.createAccount")}
             variant="primary"
             onPress={() => router.push("/create-account")}
           />
           <Button
-            label="Se connecter"
+            label={t("auth.signIn")}
             variant="secondary"
             onPress={() => router.push("/login")}
-          />
-          <Button
-            label="Continuer sans compte"
-            variant="nobackground"
-            onPress={() => router.push("/(tabs)")}
           />
         </View>
       </View>

@@ -6,6 +6,7 @@
 
 import {
   ChampionshipToggleRow,
+  LanguageModal,
   LoadingScreen,
   SavedArticleCard,
   SectionCard,
@@ -13,7 +14,9 @@ import {
   StatCard,
 } from "@/components/ui";
 import { championshipsList, savedArticles } from "@/constants/mock-data";
+import { colors as designTokens } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
+import { useLanguage } from "@/contexts/language-context";
 import { useTheme } from "@/contexts/theme-context";
 import {
   formatMemberSince,
@@ -21,20 +24,17 @@ import {
   getDisplayName,
 } from "@/lib/models/user.model";
 import { Image } from "expo-image";
-import {
-  Bell,
-  Globe,
-  Info,
-  Moon,
-  Settings,
-  User,
-} from "lucide-react-native";
+import { Bell, Globe, Info, Moon, Settings, User } from "lucide-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function ProfileScreen() {
   const { user, isLoading } = useAuth();
   const { colors, isDark, setColorScheme } = useTheme();
+  const { languageLabel } = useLanguage();
+  const { t } = useTranslation();
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [followedChampionships, setFollowedChampionships] = useState<
     Record<string, boolean>
@@ -49,9 +49,9 @@ export default function ProfileScreen() {
   };
 
   const avatarUrl = getAvatarUrl(user);
-  const displayName = getDisplayName(user);
+  const displayName = getDisplayName(user, t);
   const memberSince = user?.created_at
-    ? formatMemberSince(user.created_at)
+    ? formatMemberSince(user.created_at, t)
     : null;
 
   if (isLoading) {
@@ -64,7 +64,9 @@ export default function ProfileScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={[styles.pageTitle, { color: colors.text }]}>Profil</Text>
+      <Text style={[styles.pageTitle, { color: colors.text }]}>
+        {t("profile.title")}
+      </Text>
 
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
@@ -79,26 +81,32 @@ export default function ProfileScreen() {
           )}
         </View>
         <View style={styles.userInfo}>
-          <Text style={[styles.username, { color: colors.text }]}>{displayName}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>
+            {displayName}
+          </Text>
           {memberSince && (
-            <Text style={[styles.memberSince, { color: colors.textMuted }]}>{memberSince}</Text>
+            <Text style={[styles.memberSince, { color: colors.textMuted }]}>
+              {memberSince}
+            </Text>
           )}
         </View>
       </View>
 
       <View style={styles.stats}>
-        <StatCard value="127" label="Articles lus" />
-        <StatCard value="3" label="Championnats" />
-        <StatCard value="3" label="Sauvegardés" />
+        <StatCard value="127" label={t("profile.articlesRead")} color={colors.primary} />
+        <StatCard value="3" label={t("profile.championships")} color={designTokens.warning} />
+        <StatCard value="3" label={t("profile.saved")} color={designTokens.success} />
       </View>
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Paramètres</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>
+        {t("profile.settings")}
+      </Text>
       <SectionCard>
         <SettingRow
           icon={Bell}
           iconBgColor="#FF3B31"
-          title="Notifications"
-          subtitle="Courses et actualités"
+          title={t("profile.notifications")}
+          subtitle={t("profile.notificationsSubtitle")}
           value={notificationsEnabled}
           onValueChange={setNotificationsEnabled}
           showSwitch
@@ -106,8 +114,8 @@ export default function ProfileScreen() {
         <SettingRow
           icon={Moon}
           iconBgColor="#FF9502"
-          title="Mode sombre"
-          subtitle={isDark ? "Activé" : "Désactivé"}
+          title={t("profile.darkMode")}
+          subtitle={isDark ? t("profile.darkModeOn") : t("profile.darkModeOff")}
           value={isDark}
           onValueChange={(v) => setColorScheme(v ? "dark" : "light")}
           showSwitch
@@ -115,19 +123,22 @@ export default function ProfileScreen() {
         <SettingRow
           icon={Globe}
           iconBgColor="#31D158"
-          title="Langue"
-          subtitle="Français"
+          title={t("profile.language")}
+          subtitle={languageLabel}
           showChevron
           isLast
+          onPress={() => setLanguageModalVisible(true)}
         />
       </SectionCard>
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Championnats suivis</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>
+        {t("profile.followedChampionships")}
+      </Text>
       <SectionCard>
         {championshipsList.map((champ, index) => (
           <ChampionshipToggleRow
             key={champ.id}
-            name={champ.name}
+            name={t(champ.nameKey)}
             color={champ.color}
             value={followedChampionships[champ.id] ?? false}
             onValueChange={() => toggleChampionship(champ.id)}
@@ -137,36 +148,36 @@ export default function ProfileScreen() {
       </SectionCard>
 
       <Text style={[styles.sectionTitle, { color: colors.text }]}>
-        Articles sauvegardés{" "}
-        <Text style={[styles.sectionSubtitle, { color: colors.textMuted }]}>({savedArticles.length})</Text>
+        {t("profile.savedArticles")}{" "}
+        <Text style={[styles.sectionSubtitle, { color: colors.textMuted }]}>
+          ({savedArticles.length})
+        </Text>
       </Text>
       <View style={styles.savedSection}>
         {savedArticles.map((article) => (
           <SavedArticleCard
             key={article.id}
-            title={article.title}
-            championship={article.championship}
-            date={article.date}
+            title={t(article.titleKey)}
+            championship={t(`championships.${article.championshipId}`)}
+            date={t(article.dateKey)}
           />
         ))}
       </View>
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Autres</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>
+        {t("profile.other")}
+      </Text>
       <SectionCard>
-        <SettingRow
-          icon={Settings}
-          title="Paramètres avancés"
-          showChevron
-        />
-        <SettingRow
-          icon={Info}
-          title="À propos"
-          showChevron
-          isLast
-        />
+        <SettingRow icon={Settings} title={t("profile.advancedSettings")} showChevron />
+        <SettingRow icon={Info} title={t("profile.about")} showChevron isLast />
       </SectionCard>
 
       <View style={styles.bottomSpacer} />
+
+      <LanguageModal
+        visible={languageModalVisible}
+        onClose={() => setLanguageModalVisible(false)}
+      />
     </ScrollView>
   );
 }
