@@ -1,13 +1,17 @@
-import Button from "@/components/ui/button";
-import InputSection from "@/components/ui/input-section";
-import { supabase } from "@/lib/supabase";
+/**
+ * VIEW - Mot de passe oublié
+ *
+ * Délègue au authController (resetPasswordForEmail).
+ */
+
+import { AuthFormLayout, ScreenHeader } from "@/components/layout";
+import { Button, InputSection } from "@/components/ui";
+import { authController, getAuthCallbackUrl } from "@/lib/controllers/auth.controller";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import { ArrowLeft, Mail } from "lucide-react-native";
+import { Mail } from "lucide-react-native";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-const REDIRECT_URL = "slipstream://auth/callback";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,9 +29,9 @@ export default function ForgotPassword() {
     setError(null);
     setSuccess(false);
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+    const { error: resetError } = await authController.resetPasswordForEmail(
       email.trim(),
-      { redirectTo: REDIRECT_URL }
+      getAuthCallbackUrl()
     );
 
     setIsLoading(false);
@@ -44,19 +48,9 @@ export default function ForgotPassword() {
 
   if (success) {
     return (
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              router.back();
-            }}
-          >
-            <ArrowLeft size={24} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Email envoyé</Text>
-        </View>
-        <View style={styles.formContainer}>
+      <AuthFormLayout>
+        <ScreenHeader title="Email envoyé" />
+        <View style={styles.form}>
           <Text style={styles.successText}>
             Un lien de réinitialisation a été envoyé à{" "}
             <Text style={styles.emailHighlight}>{email}</Text>. Vérifiez votre
@@ -69,24 +63,14 @@ export default function ForgotPassword() {
             onPress={() => router.replace("/signIn")}
           />
         </View>
-      </View>
+      </AuthFormLayout>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            router.back();
-          }}
-        >
-          <ArrowLeft size={24} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Mot de passe oublié</Text>
-      </View>
-      <View style={styles.formContainer}>
+    <AuthFormLayout>
+      <ScreenHeader title="Mot de passe oublié" />
+      <View style={styles.form}>
         <Text style={styles.subtitle}>
           Entrez votre adresse email et nous vous enverrons un lien pour
           réinitialiser votre mot de passe.
@@ -102,9 +86,9 @@ export default function ForgotPassword() {
           autoComplete="email"
           textContentType="emailAddress"
         />
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
       </View>
-      <View style={styles.buttonsContainer}>
+      <View style={styles.buttons}>
         <Button
           label="Envoyer le lien"
           variant="primary"
@@ -112,37 +96,20 @@ export default function ForgotPassword() {
           onPress={handleResetPassword}
         />
       </View>
-    </View>
+    </AuthFormLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    paddingHorizontal: 20,
-    paddingVertical: 60,
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000",
+  form: {
+    width: "100%",
+    gap: 20,
+    marginTop: 60,
   },
   subtitle: {
     fontSize: 16,
     color: "#666",
     marginBottom: 20,
-  },
-  formContainer: {
-    width: "100%",
-    gap: 20,
-    marginTop: 60,
   },
   successText: {
     fontSize: 16,
@@ -152,12 +119,12 @@ const styles = StyleSheet.create({
   emailHighlight: {
     fontWeight: "600",
   },
-  errorText: {
+  error: {
     color: "#FF3B31",
     fontSize: 14,
     marginTop: -8,
   },
-  buttonsContainer: {
+  buttons: {
     width: "100%",
     marginTop: 60,
     gap: 32,

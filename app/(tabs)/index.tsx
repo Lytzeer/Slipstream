@@ -1,13 +1,17 @@
-import ChampionshipBadge from "@/components/ui/championship-badge";
-import ChampionshipSelector from "@/components/ui/championship-selector";
-import InfoCard from "@/components/ui/info-card";
-import UpcomingRaceCard from "@/components/ui/upcomming-race-card";
+import {
+  ChampionshipBadge,
+  ChampionshipSelector,
+  InfoCard,
+  UpcomingRaceCard,
+} from "@/components/ui";
+import { useTheme } from "@/contexts/theme-context";
 import { ImageBackground } from "expo-image";
 import { ChevronRight, Clock } from "lucide-react-native";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
   const [selectedChampionship, setSelectedChampionship] = useState<
     string | null
   >("ELMS");
@@ -20,11 +24,11 @@ export default function HomeScreen() {
 
   return (
     <ScrollView
-      style={styles.containerBox}
+      style={[styles.containerBox, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.scrollView}
     >
       <View id="titleSection">
-        <Text style={styles.title}>Slipstream</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Slipstream</Text>
       </View>
       <ChampionshipSelector
         championships={championshipsList}
@@ -33,7 +37,9 @@ export default function HomeScreen() {
       />
       <View id="featuredContentSection">
         <View style={styles.featuredHeaderContent}>
-          <Text style={styles.featuredHeaderTitle}>À la une</Text>
+          <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
+            À la une
+          </Text>
           <View style={styles.featuredSeeAll}>
             <Text style={styles.featuredSeeAllText}>Voir tout</Text>
             <ChevronRight color="#FF3B31" size={20} />
@@ -56,7 +62,9 @@ export default function HomeScreen() {
         </ImageBackground>
       </View>
       <View id="lastActivitySection" style={{ marginTop: 40 }}>
-        <Text style={styles.featuredHeaderTitle}>Dernières actualités</Text>
+        <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
+          Dernières actualités
+        </Text>
         <InfoCard
           image={require("@/assets/images/info/info1.png")}
           category="Analyse"
@@ -71,7 +79,9 @@ export default function HomeScreen() {
         />
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
-        <Text style={styles.featuredHeaderTitle}>Prochaines courses</Text>
+        <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
+          Prochaines courses
+        </Text>
         <UpcomingRaceCard
           championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
           race={{

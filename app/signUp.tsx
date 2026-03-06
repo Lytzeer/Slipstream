@@ -1,12 +1,18 @@
-import Button from "@/components/ui/button";
-import InputSection from "@/components/ui/input-section";
-import { GoogleSignInButton } from "@/components/social-auth/google-sign-in-button";
-import { supabase } from "@/lib/supabase";
+/**
+ * VIEW - Écran inscription
+ *
+ * Délègue au authController (signUp, OAuth).
+ */
+
+import { AuthFormLayout, ScreenHeader } from "@/components/layout";
+import { AuthLink, GoogleSignInButton } from "@/components/auth";
+import { Button, DividerWithText, InputSection } from "@/components/ui";
+import { authController } from "@/lib/controllers/auth.controller";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import { ArrowLeft, Lock, Mail, UserRound } from "lucide-react-native";
+import { Lock, Mail, UserRound } from "lucide-react-native";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,13 +41,11 @@ export default function SignUp() {
     setIsLoading(true);
     setError(null);
 
-    const { error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(),
+    const { error: signUpError } = await authController.signUp(
+      email.trim(),
       password,
-      options: {
-        data: { full_name: fullName.trim() },
-      },
-    });
+      { full_name: fullName.trim() }
+    );
 
     setIsLoading(false);
 
@@ -56,19 +60,9 @@ export default function SignUp() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            router.navigate("/onBoarding");
-          }}
-        >
-          <ArrowLeft size={24} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Inscription</Text>
-      </View>
-      <View style={styles.formContainer}>
+    <AuthFormLayout>
+      <ScreenHeader title="Inscription" backHref="/onBoarding" />
+      <View style={styles.form}>
         <InputSection
           inputTitle="Nom complet"
           placeholder="Votre nom complet"
@@ -109,14 +103,10 @@ export default function SignUp() {
           autoComplete="new-password"
           textContentType="newPassword"
         />
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
       </View>
-      <View style={styles.buttonsContainer}>
-        <View style={styles.dividerContainer}>
-          <View style={styles.divider} />
-          <Text style={styles.dividerText}>ou</Text>
-          <View style={styles.divider} />
-        </View>
+      <View style={styles.buttons}>
+        <DividerWithText />
         <GoogleSignInButton onError={(msg) => setError(msg ?? null)} />
         <Button
           label="S'inscrire"
@@ -124,89 +114,31 @@ export default function SignUp() {
           loading={isLoading}
           onPress={handleSignUp}
         />
-        <View style={styles.signUpLinkContainer}>
-          <Text style={styles.text}>Pas encore de compte ? </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/signIn")}
-            style={styles.signUpLinkRedirectionContainer}
-          >
-            <Text style={styles.signUpLink}>Se connecter</Text>
-          </TouchableOpacity>
-        </View>
+        <AuthLink
+          prefix="Déjà un compte ? "
+          linkText="Se connecter"
+          onPress={() => router.push("/signIn")}
+        />
       </View>
-    </View>
+    </AuthFormLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    paddingHorizontal: 20,
-    paddingVertical: 60,
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000",
-  },
-  formContainer: {
+  form: {
     width: "100%",
     gap: 20,
     marginTop: 60,
   },
-  inputContainer: {
-    width: "100%",
-  },
-  errorText: {
+  error: {
     color: "#FF3B31",
     fontSize: 14,
     marginTop: -8,
   },
-  dividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    gap: 12,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ddd",
-  },
-  dividerText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  buttonsContainer: {
+  buttons: {
     width: "100%",
     marginTop: 60,
     gap: 32,
     justifyContent: "center",
-    textAlign: "center",
-  },
-  signUpLinkContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  signUpLinkRedirectionContainer: {
-    marginLeft: 4,
-  },
-  signUpLink: {
-    fontSize: 16,
-    color: "#FF3B31",
-    fontWeight: "bold",
-  },
-  text: {
-    fontSize: 16,
-    color: "#000",
-    textAlign: "center",
   },
 });

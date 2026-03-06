@@ -1,47 +1,44 @@
-import { supabase } from "@/lib/supabase";
+/**
+ * VIEW - Callback OAuth
+ *
+ * Reçoit la redirection après authentification, délègue au controller.
+ */
+
+import {
+  authController,
+  extractTokensFromUrl,
+} from "@/lib/controllers/auth.controller";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-
-function extractParamsFromUrl(url: string) {
-  try {
-    const hashIndex = url.indexOf("#");
-    if (hashIndex === -1) return {};
-    const hash = url.substring(hashIndex + 1);
-    const params = new URLSearchParams(hash);
-    return {
-      access_token: params.get("access_token"),
-      refresh_token: params.get("refresh_token"),
-    };
-  } catch {
-    return {};
-  }
-}
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-native";
 
 export default function AuthCallback() {
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
+  const handled = useRef(false);
 
   useEffect(() => {
     const handleCallback = async (url: string | null) => {
-      if (!url) {
-        setStatus("error");
+      if (handled.current || !url) {
+        if (!url) setStatus("error");
         return;
       }
 
-      const { access_token, refresh_token } = extractParamsFromUrl(url);
+      const { access_token, refresh_token } = extractTokensFromUrl(url);
       if (!access_token || !refresh_token) {
         setStatus("error");
         return;
       }
 
-      const { error } = await supabase.auth.setSession({
+      handled.current = true;
+
+      const { error } = await authController.setSession(
         access_token,
-        refresh_token,
-      });
+        refresh_token
+      );
 
       if (error) {
         setStatus("error");
@@ -52,21 +49,42 @@ export default function AuthCallback() {
       router.replace("/(tabs)");
     };
 
-    const getUrl = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      if (initialUrl) {
-        handleCallback(initialUrl);
+    let subscription: { remove: () => void } | null = null;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const run = async () => {
+      if (
+        Platform.OS === "web" &&
+        typeof window !== "undefined" &&
+        window.location?.href &&
+        (window.location.href.includes("#access_token=") ||
+          window.location.href.includes("#refresh_token="))
+      ) {
+        await handleCallback(window.location.href);
         return;
       }
-      setStatus("error");
+
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        await handleCallback(initialUrl);
+        return;
+      }
+
+      subscription = Linking.addEventListener("url", ({ url }) => {
+        handleCallback(url);
+      });
+
+      timer = setTimeout(() => {
+        if (!handled.current) setStatus("error");
+      }, 5000);
     };
 
-    const subscription = Linking.addEventListener("url", ({ url }) => {
-      handleCallback(url);
-    });
+    run();
 
-    getUrl();
-    return () => subscription.remove();
+    return () => {
+      subscription?.remove();
+      clearTimeout(timer);
+    };
   }, [router]);
 
   return (
@@ -80,10 +98,7 @@ export default function AuthCallback() {
       {status === "error" && (
         <>
           <Text style={styles.errorText}>Erreur lors de la connexion</Text>
-          <Text
-            style={styles.link}
-            onPress={() => router.replace("/signIn")}
-          >
+          <Text style={styles.link} onPress={() => router.replace("/signIn")}>
             Retour à la connexion
           </Text>
         </>
@@ -100,18 +115,7 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 20,
   },
-  text: {
-    fontSize: 16,
-    color: "#666",
-  },
-  errorText: {
-    fontSize: 16,
-    color: "#FF3B31",
-    textAlign: "center",
-  },
-  link: {
-    fontSize: 16,
-    color: "#FF383C",
-    fontWeight: "600",
-  },
+  text: { fontSize: 16, color: "#666" },
+  errorText: { fontSize: 16, color: "#FF3B31", textAlign: "center" },
+  link: { fontSize: 16, color: "#FF383C", fontWeight: "600" },
 });
