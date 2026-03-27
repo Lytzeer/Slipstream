@@ -6,8 +6,12 @@ import { NotificationsProvider } from "@/contexts/notifications-context";
 import { ThemeProvider as AppThemeProvider, useTheme } from "@/contexts/theme-context";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import "react-native-reanimated";
+
+SplashScreen.preventAutoHideAsync();
 
 function StatusBarTheme() {
   const { isDark } = useTheme();
@@ -19,6 +23,10 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  useEffect(() => {
+    SplashScreen.hideAsync();
+  }, []);
+
   return (
     <ThemeProvider value={DefaultTheme}>
       <AppThemeProvider>
