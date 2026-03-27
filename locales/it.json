@@ -5,7 +5,8 @@
     "apply": "Applica",
     "or": "o",
     "guest": "Ospite",
-    "user": "Utente"
+    "user": "Utente",
+    "all": "Tutti"
   },
   "home": {
     "featured": "In evidenza",
@@ -112,8 +113,27 @@
   "onboarding": {
     "subtitle": "Le notizie del motorsport di endurance."
   },
+  "calendar": {
+    "title": "Calendario",
+    "upcomingRaces": "Prossime gare",
+    "completedRaces": "Gare terminate",
+    "racesCount": "{{count}} gare",
+    "add": "Aggiungi",
+    "completed": "Terminata",
+    "race1Name": "4 Ore del Castellet",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Ore di Imola",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari",
+    "race3Name": "GT World Challenge Spa",
+    "race3Circuit": "Circuit de Spa-Francorchamps",
+    "race4Name": "4 Ore di Portimão",
+    "race4Circuit": "Autódromo Internacional do Algarve",
+    "race5Name": "Le Mans Cup Barcellona",
+    "race5Circuit": "Circuit de Catalunya"
+  },
   "tabs": {
     "home": "Home",
+    "calendar": "Calendario",
     "explore": "Esplora",
     "profile": "Profilo"
   },

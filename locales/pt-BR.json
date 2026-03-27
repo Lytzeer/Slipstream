@@ -5,7 +5,8 @@
     "apply": "Aplicar",
     "or": "ou",
     "guest": "Convidado",
-    "user": "Usuário"
+    "user": "Usuário",
+    "all": "Todos"
   },
   "home": {
     "featured": "Em destaque",
@@ -112,8 +113,27 @@
   "onboarding": {
     "subtitle": "As notícias do automobilismo de resistência."
   },
+  "calendar": {
+    "title": "Calendário",
+    "upcomingRaces": "Próximas corridas",
+    "completedRaces": "Corridas terminadas",
+    "racesCount": "{{count}} corridas",
+    "add": "Adicionar",
+    "completed": "Terminada",
+    "race1Name": "4 Horas de Castellet",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Horas de Imola",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari",
+    "race3Name": "GT World Challenge Spa",
+    "race3Circuit": "Circuit de Spa-Francorchamps",
+    "race4Name": "4 Horas de Portimão",
+    "race4Circuit": "Autódromo Internacional do Algarve",
+    "race5Name": "Le Mans Cup Barcelona",
+    "race5Circuit": "Circuit de Catalunya"
+  },
   "tabs": {
     "home": "Início",
+    "calendar": "Calendário",
     "explore": "Explorar",
     "profile": "Perfil"
   },
