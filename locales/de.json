@@ -5,7 +5,8 @@
     "apply": "Anwenden",
     "or": "oder",
     "guest": "Gast",
-    "user": "Benutzer"
+    "user": "Benutzer",
+    "all": "Alle"
   },
   "home": {
     "featured": "Im Fokus",
@@ -112,8 +113,27 @@
   "onboarding": {
     "subtitle": "Die Nachrichten des Ausdauersports."
   },
+  "calendar": {
+    "title": "Kalender",
+    "upcomingRaces": "Kommende Rennen",
+    "completedRaces": "Beendete Rennen",
+    "racesCount": "{{count}} Rennen",
+    "add": "Hinzufügen",
+    "completed": "Beendet",
+    "race1Name": "4 Stunden von Castellet",
+    "race1Circuit": "Circuit Paul Ricard",
+    "race2Name": "4 Stunden von Imola",
+    "race2Circuit": "Autodromo Enzo e Dino Ferrari",
+    "race3Name": "GT World Challenge Spa",
+    "race3Circuit": "Circuit de Spa-Francorchamps",
+    "race4Name": "4 Stunden von Portimão",
+    "race4Circuit": "Autódromo Internacional do Algarve",
+    "race5Name": "Le Mans Cup Barcelona",
+    "race5Circuit": "Circuit de Catalunya"
+  },
   "tabs": {
     "home": "Start",
+    "calendar": "Kalender",
     "explore": "Entdecken",
     "profile": "Profil"
   },
