@@ -4,7 +4,6 @@ import { LANGUAGES, type Locale } from "@/constants/locales";
 import { useLanguage } from "@/contexts/language-context";
 import { useTheme } from "@/contexts/theme-context";
 import { useTranslation } from "react-i18next";
-import * as Updates from "expo-updates";
 import { Check, Globe, X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -48,7 +47,6 @@ export const LanguageModal = ({ visible, onClose }: Props) => {
     try {
       await setLocale(selectedLocale);
       onClose();
-      await Updates.reloadAsync();
     } catch {
       onClose();
     } finally {
