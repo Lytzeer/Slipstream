@@ -1,4 +1,5 @@
 import "@/lib/i18n";
+import { UserPreferencesSync } from "@/components/user-preferences-sync";
 import { AuthProvider } from "@/contexts/auth-context";
 import { LanguageProvider } from "@/contexts/language-context";
 import { NotificationsProvider } from "@/contexts/notifications-context";
@@ -24,6 +25,7 @@ export default function RootLayout() {
         <LanguageProvider>
           <AuthProvider>
             <NotificationsProvider>
+              <UserPreferencesSync />
               <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
               <Stack.Screen name="index" options={{ animation: "none" }} />
               <Stack.Screen name="onBoarding" options={{ animation: "slide_from_left" }} />

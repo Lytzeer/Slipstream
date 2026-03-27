@@ -5,4 +5,5 @@
  */
 
 export { supabase } from "./supabase.model";
+export * from "./app-db.types";
 export * from "./user.model";

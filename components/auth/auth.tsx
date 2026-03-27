@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -47,6 +48,7 @@ export const GoogleSignInButton = (props: { onError?: (message?: string) => void
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (Platform.OS === "web") return;
     WebBrowser.warmUpAsync();
     return () => void WebBrowser.coolDownAsync();
   }, []);
