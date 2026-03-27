@@ -11,9 +11,11 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Mail } from "lucide-react-native";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function ForgotPassword() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function ForgotPassword() {
 
   const handleResetPassword = async () => {
     if (!email.trim()) {
-      setError("Veuillez entrer votre adresse email");
+      setError(t("auth.enterEmailError"));
       return;
     }
 
@@ -49,16 +51,15 @@ export default function ForgotPassword() {
   if (success) {
     return (
       <AuthFormLayout>
-        <ScreenHeader title="Email envoyé" />
+        <ScreenHeader title={t("auth.emailSent")} />
         <View style={styles.form}>
           <Text style={styles.successText}>
-            Un lien de réinitialisation a été envoyé à{" "}
-            <Text style={styles.emailHighlight}>{email}</Text>. Vérifiez votre
-            boîte de réception et suivez les instructions pour définir un nouveau
-            mot de passe.
+            {t("auth.resetInstructions")}{" "}
+            <Text style={styles.emailHighlight}>{email}</Text>.{" "}
+            {t("auth.resetInstructionsEnd")}
           </Text>
           <Button
-            label="Retour à la connexion"
+            label={t("auth.backToLogin")}
             variant="primary"
             onPress={() => router.replace("/login")}
           />
@@ -69,15 +70,12 @@ export default function ForgotPassword() {
 
   return (
     <AuthFormLayout>
-      <ScreenHeader title="Mot de passe oublié" />
+      <ScreenHeader title={t("auth.forgotPasswordTitle")} />
       <View style={styles.form}>
-        <Text style={styles.subtitle}>
-          Entrez votre adresse email et nous vous enverrons un lien pour
-          réinitialiser votre mot de passe.
-        </Text>
+        <Text style={styles.subtitle}>{t("auth.enterEmail")}</Text>
         <InputSection
-          inputTitle="Adresse email"
-          placeholder="your.mail@exemple.com"
+          inputTitle={t("auth.email")}
+          placeholder={t("auth.emailPlaceholder")}
           leftIcon={Mail}
           value={email}
           onChangeText={setEmail}
@@ -90,7 +88,7 @@ export default function ForgotPassword() {
       </View>
       <View style={styles.buttons}>
         <Button
-          label="Envoyer le lien"
+          label={t("auth.sendLink")}
           variant="primary"
           loading={isLoading}
           onPress={handleResetPassword}
