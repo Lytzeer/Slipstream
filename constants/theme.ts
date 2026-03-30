@@ -4,8 +4,8 @@ import { Platform } from "react-native";
 export const colors = {
   primary: "#FF3B31",
   primaryAlt: "#FF383C",
-  secondary: "#1C1E1D",
-  background: "#151718",
+  secondary: "#1E2330",
+  background: "#111828",
   surface: "#2C2E2F",
   border: "#3C3C43",
   text: "#ECEDEE",
@@ -33,13 +33,13 @@ export const themeColors = {
     tabIconSelected: "#FF3B31",
   },
   dark: {
-    background: "#151718",
-    surface: "#2C2E2F",
-    surfaceAlt: "#3C3C43",
+    background: "#111828",
+    surface: "#1E293B",
+    surfaceAlt: "#334155",
     text: "#ECEDEE",
     textMuted: "#9BA1A6",
     textSecondary: "#8E8E93",
-    border: "#3C3C43",
+    border: "#334155",
     primary: "#FF3B31",
     tabIcon: "#9BA1A6",
     tabIconSelected: "#ECEDEE",
@@ -50,7 +50,8 @@ export type ColorScheme = keyof typeof themeColors;
 
 // Legacy (collapsible, use-theme-color)
 const tintLight = "#0a7ea4";
-const tintDark = "#fff";
+/** Accent / liens en mode sombre — aligné sur le texte principal (#111828) */
+const tintDark = "#ECEDEE";
 export const Colors = {
   light: {
     text: "#11181C",
@@ -62,7 +63,7 @@ export const Colors = {
   },
   dark: {
     text: "#ECEDEE",
-    background: "#151718",
+    background: "#111828",
     tint: tintDark,
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
@@ -71,8 +72,18 @@ export const Colors = {
 };
 
 export const Fonts = Platform.select({
-  ios: { sans: "system-ui", serif: "ui-serif", rounded: "ui-rounded", mono: "ui-monospace" },
-  default: { sans: "normal", serif: "serif", rounded: "normal", mono: "monospace" },
+  ios: {
+    sans: "system-ui",
+    serif: "ui-serif",
+    rounded: "ui-rounded",
+    mono: "ui-monospace",
+  },
+  default: {
+    sans: "normal",
+    serif: "serif",
+    rounded: "normal",
+    mono: "monospace",
+  },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",

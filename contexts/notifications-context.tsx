@@ -12,6 +12,8 @@ type NotificationsContextValue = {
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
   requestPermissionAfterLogin: () => void;
+  /** Hydratation depuis Supabase sans dialogue de permission */
+  hydrateFromRemote: (enabled: boolean) => Promise<void>;
 };
 
 const NotificationsContext = createContext<NotificationsContextValue | null>(null);
@@ -58,10 +60,16 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
     setState(false);
   }, [t]);
 
+  const hydrateFromRemote = useCallback(async (enabled: boolean) => {
+    setState(enabled);
+    await setStorage(enabled);
+  }, []);
+
   const value: NotificationsContextValue = {
     notificationsEnabled,
     setNotificationsEnabled,
     requestPermissionAfterLogin,
+    hydrateFromRemote,
   };
 
   return (

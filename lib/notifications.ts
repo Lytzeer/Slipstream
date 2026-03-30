@@ -97,6 +97,15 @@ export const requestNotificationPermission = async (
     return false;
   }
   if (options?.showPrompt) {
+    try {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status === "granted") {
+        await safeSet(NOTIFICATIONS_STORAGE_KEY, "true");
+        return true;
+      }
+    } catch {
+      /* ignore */
+    }
     return new Promise((resolve) => {
       Alert.alert(
         options.promptTitle ?? defaultPrompt.title,

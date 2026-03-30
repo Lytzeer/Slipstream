@@ -2,22 +2,12 @@ import { useTheme } from "@/contexts/theme-context";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function ExploreScreen() {
+export default function NewsScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: colors.background },
-      ]}
-    >
-      <Text style={[styles.title, { color: colors.text }]}>
-        {t("explore.title")}
-      </Text>
-      <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-        {t("explore.subtitle")}
-      </Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.text }]}>News</Text>
     </View>
   );
 }

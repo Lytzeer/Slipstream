@@ -1,4 +1,4 @@
-import type { ChampionshipRaw } from "@/types";
+import type { CalendarRace, ChampionshipRaw } from "@/types";
 
 export const championshipsList: ChampionshipRaw[] = [
   { id: "ELMS", nameKey: "championships.ELMS", color: "#FF3B31" },
@@ -12,6 +12,59 @@ export type SavedArticle = {
   championshipId: string;
   dateKey: string;
 };
+
+export const calendarRaces: CalendarRace[] = [
+  {
+    id: "1",
+    nameKey: "calendar.race1Name",
+    championshipId: "ELMS",
+    circuitKey: "calendar.race1Circuit",
+    country: "France",
+    date: "03 Mai 2026",
+    time: "11:00",
+    completed: false,
+  },
+  {
+    id: "2",
+    nameKey: "calendar.race2Name",
+    championshipId: "LMC",
+    circuitKey: "calendar.race2Circuit",
+    country: "Italie",
+    date: "05 Juillet 2026",
+    time: "14:30",
+    completed: false,
+  },
+  {
+    id: "3",
+    nameKey: "calendar.race3Name",
+    championshipId: "GTWORLD",
+    circuitKey: "calendar.race3Circuit",
+    country: "Belgique",
+    date: "26 Juillet 2026",
+    time: "13:00",
+    completed: false,
+  },
+  {
+    id: "4",
+    nameKey: "calendar.race4Name",
+    championshipId: "ELMS",
+    circuitKey: "calendar.race4Circuit",
+    country: "Portugal",
+    date: "15 Mars 2026",
+    time: "11:00",
+    completed: true,
+  },
+  {
+    id: "5",
+    nameKey: "calendar.race5Name",
+    championshipId: "LMC",
+    circuitKey: "calendar.race5Circuit",
+    country: "Espagne",
+    date: "22 Février 2026",
+    time: "14:00",
+    completed: true,
+  },
+];
 
 export const savedArticles: SavedArticle[] = [
   {

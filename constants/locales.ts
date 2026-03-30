@@ -9,5 +9,8 @@ export const LANGUAGES = [
 
 export type Locale = (typeof LANGUAGES)[number]["code"];
 
+export const isValidLocale = (value: string): value is Locale =>
+  LANGUAGES.some((l) => l.code === value);
+
 export const getLanguageLabel = (code: Locale) =>
   LANGUAGES.find((l) => l.code === code)?.label ?? "Français";
