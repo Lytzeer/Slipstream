@@ -11,3 +11,12 @@ export type CalendarRace = {
   time: string;
   completed: boolean;
 };
+
+export type NewsArticle = {
+  id: string;
+  titleKey: string;
+  championshipId: string;
+  categoryKey: string;
+  date: string;
+  readTimeKey: string;
+};

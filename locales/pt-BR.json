@@ -131,9 +131,32 @@
     "race5Name": "Le Mans Cup Barcelona",
     "race5Circuit": "Circuit de Catalunya"
   },
+  "news": {
+    "title": "Notícias",
+    "searchPlaceholder": "Pesquisar um artigo...",
+    "filters": "Filtros",
+    "noResults": "Nenhum artigo encontrado",
+    "categoryAnalysis": "Análise",
+    "categoryResult": "Resultado",
+    "categoryPreview": "Prévia",
+    "categoryInterview": "Entrevista",
+    "article1Title": "Análise técnica: Os segredos da Ferrari 499P em Castellet",
+    "article1ReadTime": "5 min de leitura",
+    "article2Title": "Resultados 4 Horas de Portimão: vitória ELMS",
+    "article2ReadTime": "3 min de leitura",
+    "article3Title": "Prévia: GT World Challenge Spa, favoritos 2026",
+    "article3ReadTime": "4 min de leitura",
+    "article4Title": "Entrevista exclusiva: o campeão ELMS fala sobre sua temporada",
+    "article4ReadTime": "6 min de leitura",
+    "article5Title": "Le Mans Cup: análise dos novos regulamentos técnicos",
+    "article5ReadTime": "7 min de leitura",
+    "article6Title": "GT World Challenge: resultados e classificação após Barcelona",
+    "article6ReadTime": "3 min de leitura"
+  },
   "tabs": {
     "home": "Início",
     "calendar": "Calendário",
+    "news": "Notícias",
     "explore": "Explorar",
     "profile": "Perfil"
   },
