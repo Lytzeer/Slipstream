@@ -1,11 +1,11 @@
 /**
- * CONTROLLER - Authentification
+ * Auth controller (database layer)
  *
- * Logique métier : session, OAuth, déconnexion, signIn, signUp, resetPassword.
- * Utilise le model Supabase, expose des méthodes pour les vues.
+ * Expose un point d'entrée unique pour la session et l'auth Supabase
+ * afin d'éviter tout accès direct côté UI.
  */
 
-import { supabase } from "@/lib/models/supabase.model";
+import { authDatabase } from "@/lib/database/auth/auth.database";
 import type { Session } from "@supabase/supabase-js";
 import { Platform } from "react-native";
 
@@ -34,41 +34,22 @@ export const extractTokensFromUrl = (url: string) => {
 };
 
 export const authController = {
-  getSession: () => supabase.auth.getSession(),
-
+  getSession: () => authDatabase.getSession(),
   setSession: (accessToken: string, refreshToken: string) =>
-    supabase.auth.setSession({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    }),
-
-  signOut: () => supabase.auth.signOut(),
-
+    authDatabase.setSession(accessToken, refreshToken),
+  exchangeCodeForSession: (code: string) => authDatabase.exchangeCodeForSession(code),
+  signOut: () => authDatabase.signOut(),
   signInWithPassword: (email: string, password: string) =>
-    supabase.auth.signInWithPassword({ email, password }),
-
+    authDatabase.signInWithPassword(email, password),
   signUp: (email: string, password: string, metadata?: { full_name?: string }) =>
-    supabase.auth.signUp({
-      email,
-      password,
-      options: { data: metadata },
-    }),
-
+    authDatabase.signUp(email, password, metadata),
   resetPasswordForEmail: (email: string, redirectTo: string) =>
-    supabase.auth.resetPasswordForEmail(email, { redirectTo }),
-
+    authDatabase.resetPasswordForEmail(email, redirectTo),
   signInWithOAuth: (provider: "google", redirectTo: string) =>
-    supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo, skipBrowserRedirect: true },
+    authDatabase.signInWithOAuth(provider, {
+      redirectTo,
+      ...(Platform.OS === "web" ? {} : { skipBrowserRedirect: true }),
     }),
-
-  onAuthStateChange: (callback: (session: Session | null) => void) => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) => {
-      callback(session);
-    });
-    return () => subscription.unsubscribe();
-  },
+  onAuthStateChange: (callback: (session: Session | null) => void) =>
+    authDatabase.onAuthStateChange(callback),
 };

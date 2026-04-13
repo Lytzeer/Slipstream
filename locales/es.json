@@ -7,6 +7,9 @@
     "guest": "Invitado",
     "user": "Usuario"
   },
+  "cms": {
+    "apiError": "Error de API"
+  },
   "home": {
     "featured": "Destacado",
     "lastNews": "Últimas noticias",
@@ -41,16 +44,22 @@
     "darkModeOff": "Desactivado",
     "language": "Idioma",
     "followedChampionships": "Campeonatos seguidos",
+    "followedChampionshipsHint": "Estas opciones filtran noticias y alertas de cada campeonato.",
     "savedArticles": "Artículos guardados",
     "other": "Otros",
     "advancedSettings": "Ajustes avanzados",
     "about": "Acerca de",
+    "logout": "Cerrar sesión",
+    "logoutSubtitle": "Cerrar sesión de esta cuenta en este dispositivo",
+    "sessionManagedBySupabase": "Sesión",
+    "sessionManagedBySupabaseHint": "La autenticación está gestionada por Supabase",
     "memberSince": "Miembro desde {{month}} {{year}}"
   },
   "championships": {
     "ELMS": "ELMS",
     "LMC": "Le Mans Cup",
-    "GTWORLD": "GT World"
+    "GTWORLD": "GT World",
+    "WEC": "WEC"
   },
   "articles": {
     "saved1": "Repaso de la victoria histórica en las 24H de Le Mans",

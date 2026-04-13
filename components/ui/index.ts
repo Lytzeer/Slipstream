@@ -5,3 +5,4 @@ export { SavedArticleCard, SectionCard, StatCard, UpcomingRaceCard } from "./car
 export { default as ChampionshipBadge, ChampionshipSelector, ChampionshipToggleRow } from "./championship";
 export { DividerWithText, LoadingScreen, SettingRow } from "./misc";
 export { LanguageModal } from "./language-modal";
+export { ChampionshipsModal } from "./championships-modal";

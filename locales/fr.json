@@ -7,6 +7,9 @@
     "guest": "Invité",
     "user": "Utilisateur"
   },
+  "cms": {
+    "apiError": "Erreur API"
+  },
   "home": {
     "featured": "À la une",
     "lastNews": "Dernières actualités",
@@ -41,16 +44,22 @@
     "darkModeOff": "Désactivé",
     "language": "Langue",
     "followedChampionships": "Championnats suivis",
+    "followedChampionshipsHint": "Ces choix filtrent les actualités et rappels liés à chaque championnat.",
     "savedArticles": "Articles sauvegardés",
     "other": "Autres",
     "advancedSettings": "Paramètres avancés",
     "about": "À propos",
+    "logout": "Déconnexion",
+    "logoutSubtitle": "Se déconnecter de ce compte sur cet appareil",
+    "sessionManagedBySupabase": "Session",
+    "sessionManagedBySupabaseHint": "L'authentification est gérée par Supabase",
     "memberSince": "Membre depuis {{month}} {{year}}"
   },
   "championships": {
     "ELMS": "ELMS",
     "LMC": "Le Mans Cup",
-    "GTWORLD": "GT World"
+    "GTWORLD": "GT World",
+    "WEC": "WEC"
   },
   "articles": {
     "saved1": "Retour sur la victoire historique aux 24H du Mans",

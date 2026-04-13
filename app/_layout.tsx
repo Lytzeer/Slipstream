@@ -37,6 +37,7 @@ export default function RootLayout() {
               <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
               <Stack.Screen name="index" options={{ animation: "none" }} />
               <Stack.Screen name="onBoarding" options={{ animation: "slide_from_left" }} />
+              <Stack.Screen name="advanced-settings" options={{ animation: "slide_from_right" }} />
             </Stack>
               <StatusBarTheme />
             </NotificationsProvider>

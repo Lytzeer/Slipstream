@@ -7,6 +7,9 @@
     "guest": "Guest",
     "user": "User"
   },
+  "cms": {
+    "apiError": "API error"
+  },
   "home": {
     "featured": "Featured",
     "lastNews": "Latest news",
@@ -41,16 +44,22 @@
     "darkModeOff": "Off",
     "language": "Language",
     "followedChampionships": "Followed championships",
+    "followedChampionshipsHint": "These choices filter news and alerts for each championship.",
     "savedArticles": "Saved articles",
     "other": "Other",
     "advancedSettings": "Advanced settings",
     "about": "About",
+    "logout": "Sign out",
+    "logoutSubtitle": "Sign out from this account on this device",
+    "sessionManagedBySupabase": "Session",
+    "sessionManagedBySupabaseHint": "Authentication is managed by Supabase",
     "memberSince": "Member since {{month}} {{year}}"
   },
   "championships": {
     "ELMS": "ELMS",
     "LMC": "Le Mans Cup",
-    "GTWORLD": "GT World"
+    "GTWORLD": "GT World",
+    "WEC": "WEC"
   },
   "articles": {
     "saved1": "Looking back at the historic 24 Hours of Le Mans victory",

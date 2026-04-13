@@ -5,7 +5,7 @@
  */
 
 import {
-  ChampionshipToggleRow,
+  ChampionshipsModal,
   LanguageModal,
   LoadingScreen,
   SavedArticleCard,
@@ -13,8 +13,14 @@ import {
   SettingRow,
   StatCard,
 } from "@/components/ui";
-import { championshipsList, savedArticles } from "@/constants/mock-data";
-import { colors as designTokens } from "@/constants/theme";
+import { savedArticles } from "@/constants/mock-data";
+import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
+import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
+import {
+  fetchUserFollowedChampionshipIds,
+  replaceUserFollowedChampionshipIds,
+} from "@/lib/database/controllers/user-followed-championships.controller";
+import { colors as designTokens, tintDark, tintLight } from "@/constants/theme";
 import { useAuth } from "@/contexts/auth-context";
 import { useLanguage } from "@/contexts/language-context";
 import { useNotifications } from "@/contexts/notifications-context";
@@ -23,37 +29,101 @@ import {
   formatMemberSince,
   getAvatarUrl,
   getDisplayName,
-} from "@/lib/models/user.model";
+} from "@/lib/domain/user/user.model";
 import { Image } from "expo-image";
-import { Bell, Globe, Info, Moon, Settings, User } from "lucide-react-native";
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import { Bell, ChevronRight, Globe, Info, Moon, Settings, User } from "lucide-react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ProfileScreen() {
   const { user, isLoading } = useAuth();
+  const router = useRouter();
   const { colors, isDark, setColorScheme } = useTheme();
+  const tintIconBg = isDark ? tintDark : tintLight;
+  const tintIconFg = isDark ? "#111828" : "#ffffff";
   const { languageLabel } = useLanguage();
   const { notificationsEnabled, setNotificationsEnabled } = useNotifications();
   const { t } = useTranslation();
+  const {
+    championships: championshipsCatalog,
+    error: championshipsError,
+    isLoading: championshipsLoading,
+  } = useChampionshipsCatalog();
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
-  const [followedChampionships, setFollowedChampionships] = useState<
-    Record<string, boolean>
-  >({
-    ELMS: true,
-    LMC: true,
-    GTWORLD: false,
-  });
+  const [championshipsModalVisible, setChampionshipsModalVisible] = useState(false);
+  const [followedChampionships, setFollowedChampionships] = useState<Record<string, boolean>>({});
+  const loadedFollowedForUserRef = useRef<string | null>(null);
 
-  const toggleChampionship = (id: string) => {
-    setFollowedChampionships((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  const championshipsSummary = useMemo(() => {
+    const names = championshipsCatalog
+      .filter((c) => followedChampionships[c.id])
+      .map((c) => getChampionshipDisplayName(c, t));
+    return names.length ? names.join(", ") : "—";
+  }, [championshipsCatalog, followedChampionships, t]);
+
+  const followedChampionshipsCount = useMemo(
+    () =>
+      championshipsCatalog.filter((c) => followedChampionships[c.id]).length,
+    [championshipsCatalog, followedChampionships]
+  );
+
+  useEffect(() => {
+    if (championshipsCatalog.length === 0) {
+      setFollowedChampionships({});
+      return;
+    }
+    setFollowedChampionships((prev) => {
+      const next: Record<string, boolean> = {};
+      for (const champ of championshipsCatalog) {
+        // Aucun auto-follow implicite : la source de vérité est la DB.
+        next[champ.id] = prev[champ.id] ?? false;
+      }
+      return next;
+    });
+  }, [championshipsCatalog]);
+
+  useEffect(() => {
+    const userId = user?.id ?? null;
+    if (!userId || championshipsCatalog.length === 0) return;
+    if (loadedFollowedForUserRef.current === userId) return;
+
+    let cancelled = false;
+    (async () => {
+      const ids = await fetchUserFollowedChampionshipIds(userId);
+      if (cancelled) return;
+      setFollowedChampionships((prev) => {
+        const next: Record<string, boolean> = { ...prev };
+        for (const champ of championshipsCatalog) {
+          next[champ.id] = ids.has(champ.id);
+        }
+        return next;
+      });
+      loadedFollowedForUserRef.current = userId;
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, championshipsCatalog]);
 
   const avatarUrl = getAvatarUrl(user);
   const displayName = getDisplayName(user, t);
   const memberSince = user?.created_at
     ? formatMemberSince(user.created_at, t)
     : null;
+
+  const handleAdvancedSettingsPress = () => {
+    router.push("/advanced-settings");
+  };
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -95,7 +165,17 @@ export default function ProfileScreen() {
 
       <View style={styles.stats}>
         <StatCard value="127" label={t("profile.articlesRead")} color={colors.primary} />
-        <StatCard value="3" label={t("profile.championships")} color={designTokens.warning} />
+        <StatCard
+          value={
+            championshipsError
+              ? "—"
+              : championshipsLoading
+                ? "…"
+                : String(championshipsCatalog.length)
+          }
+          label={t("profile.championships")}
+          color={isDark ? tintDark : tintLight}
+        />
         <StatCard value="3" label={t("profile.saved")} color={designTokens.success} />
       </View>
 
@@ -114,7 +194,8 @@ export default function ProfileScreen() {
         />
         <SettingRow
           icon={Moon}
-          iconBgColor="#FF9502"
+          iconBgColor={tintIconBg}
+          iconColor={tintIconFg}
           title={t("profile.darkMode")}
           subtitle={isDark ? t("profile.darkModeOn") : t("profile.darkModeOff")}
           value={isDark}
@@ -135,18 +216,51 @@ export default function ProfileScreen() {
       <Text style={[styles.sectionTitle, { color: colors.text }]}>
         {t("profile.followedChampionships")}
       </Text>
-      <SectionCard>
-        {championshipsList.map((champ, index) => (
-          <ChampionshipToggleRow
-            key={champ.id}
-            name={t(champ.nameKey)}
-            color={champ.color}
-            value={followedChampionships[champ.id] ?? false}
-            onValueChange={() => toggleChampionship(champ.id)}
-            isLast={index === championshipsList.length - 1}
-          />
-        ))}
-      </SectionCard>
+      {championshipsLoading ? (
+        <View style={styles.championshipsButtonWrap}>
+          <SectionCard>
+            <View style={styles.championshipsLoadingBox}>
+              <ActivityIndicator color={colors.primary} />
+            </View>
+          </SectionCard>
+        </View>
+      ) : championshipsError ? (
+        <View style={styles.championshipsButtonWrap}>
+          <SectionCard>
+            <View style={styles.championshipsErrorBox}>
+              <Text style={[styles.championshipsErrorText, { color: designTokens.error }]}>
+                {t(championshipsError)}
+              </Text>
+            </View>
+          </SectionCard>
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles.championshipsButtonWrap}
+          activeOpacity={0.7}
+          onPress={() => setChampionshipsModalVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t("profile.followedChampionships")}
+        >
+          <SectionCard>
+            <View style={styles.championshipsButtonRow}>
+              <View style={styles.championshipsButtonTextCol}>
+                <Text
+                  style={[styles.championshipsButtonSummary, { color: colors.text }]}
+                  numberOfLines={2}
+                >
+                  {championshipsSummary}
+                </Text>
+                <Text style={[styles.championshipsButtonMeta, { color: colors.textMuted }]}>
+                  {t("profile.championships")} • {followedChampionshipsCount}/
+                  {championshipsCatalog.length}
+                </Text>
+              </View>
+              <ChevronRight size={20} color={colors.textSecondary} />
+            </View>
+          </SectionCard>
+        </TouchableOpacity>
+      )}
 
       <Text style={[styles.sectionTitle, { color: colors.text }]}>
         {t("profile.savedArticles")}{" "}
@@ -169,7 +283,12 @@ export default function ProfileScreen() {
         {t("profile.other")}
       </Text>
       <SectionCard>
-        <SettingRow icon={Settings} title={t("profile.advancedSettings")} showChevron />
+        <SettingRow
+          icon={Settings}
+          title={t("profile.advancedSettings")}
+          showChevron
+          onPress={handleAdvancedSettingsPress}
+        />
         <SettingRow icon={Info} title={t("profile.about")} showChevron isLast />
       </SectionCard>
 
@@ -178,6 +297,21 @@ export default function ProfileScreen() {
       <LanguageModal
         visible={languageModalVisible}
         onClose={() => setLanguageModalVisible(false)}
+      />
+      <ChampionshipsModal
+        visible={championshipsModalVisible && !championshipsError}
+        onClose={() => setChampionshipsModalVisible(false)}
+        championships={championshipsCatalog}
+        followedChampionships={followedChampionships}
+        onApply={(next) => {
+          setFollowedChampionships(next);
+          const userId = user?.id;
+          if (!userId) return;
+          const ids = championshipsCatalog
+            .filter((champ) => next[champ.id])
+            .map((champ) => champ.id);
+          void replaceUserFollowedChampionshipIds(userId, ids);
+        }}
       />
     </ScrollView>
   );
@@ -242,6 +376,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
     color: "#9BA1A6",
+  },
+  championshipsButtonWrap: {
+    marginBottom: 24,
+  },
+  championshipsLoadingBox: {
+    padding: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  championshipsErrorBox: {
+    padding: 16,
+  },
+  championshipsErrorText: {
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  championshipsButtonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 16,
+  },
+  championshipsButtonTextCol: {
+    flex: 1,
+  },
+  championshipsButtonSummary: {
+    fontSize: 15,
+    fontWeight: "500",
+    lineHeight: 20,
+  },
+  championshipsButtonMeta: {
+    fontSize: 13,
+    marginTop: 4,
   },
   savedSection: {
     flexDirection: "column",

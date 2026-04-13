@@ -7,7 +7,7 @@
  * Gère l'état React (user, loading) et s'abonne aux changements de session.
  */
 
-import { authController } from "@/lib/controllers/auth.controller";
+import { authController } from "@/lib/database/controllers/auth.controller";
 import type { User } from "@supabase/supabase-js";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
@@ -16,6 +16,7 @@ type AuthContextValue = {
   isLoading: boolean;
   isInitialized: boolean;
   refreshSession: () => Promise<void>;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -32,6 +33,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(session?.user ?? null);
     setIsLoading(false);
     setIsInitialized(true);
+  }, []);
+
+  const signOut = useCallback(async () => {
+    await authController.signOut();
+    setUser(null);
   }, []);
 
   useEffect(() => {
@@ -51,6 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     isLoading,
     isInitialized,
     refreshSession,
+    signOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

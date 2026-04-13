@@ -4,26 +4,43 @@ import {
   InfoCard,
   UpcomingRaceCard,
 } from "@/components/ui";
-import { championshipsList as championshipsRaw } from "@/constants/mock-data";
+import { colors as paletteColors } from "@/constants/theme";
+import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
+import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
 import { useTheme } from "@/contexts/theme-context";
 import { ImageBackground } from "expo-image";
 import { ChevronRight, Clock } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const {
+    championships: championshipsRaw,
+    error: championshipsError,
+    isLoading: championshipsLoading,
+  } = useChampionshipsCatalog();
   const [selectedChampionship, setSelectedChampionship] = useState<
     string | null
   >("ELMS");
 
   const championshipsList = championshipsRaw.map((c) => ({
     id: c.id,
-    name: t(c.nameKey),
+    name: getChampionshipDisplayName(c, t),
     color: c.color,
   }));
+
+  useEffect(() => {
+    if (championshipsError || championshipsRaw.length === 0) return;
+    if (
+      !selectedChampionship ||
+      !championshipsRaw.some((c) => c.id === selectedChampionship)
+    ) {
+      setSelectedChampionship(championshipsRaw[0].id);
+    }
+  }, [championshipsRaw, championshipsError, selectedChampionship]);
 
   return (
     <ScrollView
@@ -35,11 +52,21 @@ export default function HomeScreen() {
           {t("common.appName")}
         </Text>
       </View>
-      <ChampionshipSelector
-        championships={championshipsList}
-        selectedChampionship={selectedChampionship}
-        onChampionshipChange={setSelectedChampionship}
-      />
+      {championshipsLoading ? (
+        <View style={styles.championshipsLoading}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : championshipsError ? (
+        <Text style={[styles.championshipsApiError, { color: paletteColors.error }]}>
+          {t(championshipsError)}
+        </Text>
+      ) : (
+        <ChampionshipSelector
+          championships={championshipsList}
+          selectedChampionship={selectedChampionship}
+          onChampionshipChange={setSelectedChampionship}
+        />
+      )}
       <View id="featuredContentSection">
         <View style={styles.featuredHeaderContent}>
           <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
@@ -166,5 +193,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     opacity: 0.8,
+  },
+  championshipsLoading: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  championshipsApiError: {
+    fontSize: 15,
+    fontWeight: "500",
+    paddingVertical: 16,
   },
 });

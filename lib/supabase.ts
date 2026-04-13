@@ -1,1 +1,4 @@
-export { supabase } from "./models/supabase.model";
+/**
+ * Compat import — préférer `@/lib/database/client/supabase.client`.
+ */
+export { supabase } from "./database/client/supabase.client";

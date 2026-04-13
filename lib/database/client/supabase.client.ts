@@ -1,11 +1,7 @@
 /**
- * MODEL - Client Supabase
+ * DATABASE CLIENT — Supabase
  *
- * Couche données : client Supabase pour l'authentification et les requêtes.
  * Storage adaptatif : localStorage (web) / AsyncStorage (natif) avec fallback mémoire.
- * En Expo Go Android, AsyncStorage peut échouer → fallback mémoire uniquement.
- *
- * @see lib/controllers/auth.controller.ts pour la logique métier auth
  */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,7 +27,6 @@ const webStorage = {
 };
 
 const memoryFallback = new Map<string, string>();
-
 let asyncStorageAvailable: boolean | null = null;
 
 const checkAsyncStorage = async (): Promise<boolean> => {
@@ -61,7 +56,7 @@ const nativeStorage = {
     try {
       await AsyncStorage.setItem(key, value);
     } catch {
-      /* Fallback mémoire déjà mis à jour */
+      // fallback mémoire déjà à jour
     }
   },
   removeItem: async (key: string) => {
@@ -70,7 +65,7 @@ const nativeStorage = {
     try {
       await AsyncStorage.removeItem(key);
     } catch {
-      /* ignore */
+      // ignore
     }
   },
 };
