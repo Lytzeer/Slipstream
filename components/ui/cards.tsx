@@ -171,8 +171,12 @@ export function UpcomingRaceCard({
       <View style={cardStyles.upcomingRow}>
         <View style={cardStyles.upcomingLeft}>
           <ChampionshipBadge champ={championship} />
-          <Text style={[cardStyles.raceName, themed.text]}>{race.name}</Text>
-          <Text style={[cardStyles.circuit, themed.muted]}>{race.circuit}</Text>
+          <Text style={[cardStyles.raceName, themed.text]} numberOfLines={2}>
+            {race.name}
+          </Text>
+          <Text style={[cardStyles.circuit, themed.muted]} numberOfLines={2}>
+            {race.circuit}
+          </Text>
         </View>
         <View style={cardStyles.upcomingRight}>
           <Text style={[cardStyles.date, themed.primary]}>{race.date}</Text>
@@ -243,8 +247,10 @@ const cardStyles = StyleSheet.create({
     padding: 16,
     borderWidth: StyleSheet.hairlineWidth,
     marginTop: 16,
+    minHeight: 152,
   },
   upcomingRow: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",

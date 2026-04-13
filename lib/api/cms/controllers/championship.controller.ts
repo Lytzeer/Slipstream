@@ -1,11 +1,10 @@
 import {
   buildCmsGroupContentUrl,
-  fetchCmsChampionshipGroupContent,
   getCmsApiBaseUrlFromEnv,
   parseCmsChampionshipGroupJson,
 } from "@/lib/api/cms/groups-content.api";
 import type { CmsGroupChampionshipResponse } from "@/lib/api/cms/models/championship.types";
-import type { ChampionshipRaw } from "@/types";
+import type { ChampionshipRaw, Race } from "@/types";
 
 /** Conservé pour compatibilité legacy ; le flux principal est 100% CMS dynamique. */
 export const CHAMPIONSHIPS_CATALOG_FALLBACK: ChampionshipRaw[] = [];
@@ -39,6 +38,9 @@ const toDynamicColor = (seed: string): string => {
   const hue = hashString(seed) % 360;
   return `hsl(${hue} 72% 52%)`;
 };
+
+const championshipFromCollectionSlug = (slug: string): string =>
+  normalizeLinkValue(slug.replace(/^calendrier-/, "").replace(/-eu$/, ""));
 
 export const mapChampionshipLinkValueToRaw = (raw: string): ChampionshipRaw | null => {
   const v = normalizeLinkValue(raw);
@@ -115,7 +117,7 @@ export const fetchChampionshipsCatalog =
     if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
 
     try {
-      const res = await fetchCmsChampionshipGroupContent(base);
+      const res = await fetch(buildChampionshipGroupContentUrl(base, { status: "published" }));
       if (!res.ok) {
         console.warn("[cms] championship group:", res.status, res.statusText);
         return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
@@ -128,3 +130,193 @@ export const fetchChampionshipsCatalog =
       return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
     }
   };
+
+export type ChampionshipRaceFeedItem = {
+  race: Race;
+  championship: ChampionshipRaw;
+};
+
+type FetchUpcomingRacesResult =
+  | { ok: true; data: ChampionshipRaceFeedItem[]; source: "upcoming" | "past" }
+  | { ok: false; error: string };
+
+const asNonEmpty = (value: unknown): string | null => {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+};
+
+const formatRaceDate = (rawDate: string, locale: string): string => {
+  const parsed = new Date(rawDate);
+  if (Number.isNaN(parsed.getTime())) return rawDate;
+  return new Intl.DateTimeFormat(locale || "fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(parsed);
+};
+
+const toTimestamp = (rawDate: string): number | null => {
+  const parsed = new Date(rawDate);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.getTime();
+};
+
+const mapEntryToRace = (
+  entry: { data: Record<string, unknown> | null },
+  locale: string
+): { race: Race; timestamp: number } | null => {
+  const data = entry.data ?? {};
+  const name = asNonEmpty(data.title) ?? asNonEmpty(data.name);
+  const circuit =
+    asNonEmpty(data.track_name) ??
+    asNonEmpty(data.circuit) ??
+    asNonEmpty(data.location) ??
+    asNonEmpty(data.track) ??
+    asNonEmpty(data.venue);
+  const rawDate =
+    asNonEmpty(data.start_date) ??
+    asNonEmpty(data.end_date) ??
+    asNonEmpty(data.date) ??
+    asNonEmpty(data.raceDate) ??
+    asNonEmpty(data.startDate) ??
+    asNonEmpty(data.datetime);
+  if (!name || !circuit || !rawDate) return null;
+  const timestamp = toTimestamp(rawDate);
+  if (!timestamp) return null;
+  return {
+    race: { name, circuit, date: formatRaceDate(rawDate, locale) },
+    timestamp,
+  };
+};
+
+export const fetchUpcomingRacesByChampionship = async (
+  championshipLinkValue: string,
+  locale: string
+): Promise<FetchUpcomingRacesResult> => {
+  const base = getCmsApiBaseUrlFromEnv();
+  if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+
+  const normalized = normalizeLinkValue(championshipLinkValue);
+  if (!normalized) return { ok: true, data: [], source: "upcoming" };
+
+  try {
+    const url = buildChampionshipGroupContentUrl(base, {
+      status: "published",
+      limit: 50,
+    });
+    console.log("[cms:races] request", {
+      championshipLinkValue,
+      normalized,
+      locale,
+      url,
+    });
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn("[cms] upcoming races:", response.status, response.statusText);
+      return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+    }
+    const payload = await parseCmsChampionshipGroupJson(response);
+    console.log("[cms:races] payload meta", {
+      collectionsCount: payload.meta?.collectionsCount,
+      totalItems: payload.meta?.totalItems,
+      blocks: payload.data?.length ?? 0,
+    });
+    const entriesByBlockAndField = (payload.data ?? []).flatMap((block) => {
+      const blockChampionship = championshipFromCollectionSlug(block.collection?.slug ?? "");
+      const blockMatches = blockChampionship === normalized;
+      const blockEntries = block.data ?? [];
+      const matchedEntries = blockEntries.filter((entry) => {
+        const champField = asNonEmpty(entry.data?.championship);
+        const fieldMatches = champField ? normalizeLinkValue(champField) === normalized : false;
+        return blockMatches || fieldMatches;
+      });
+      console.log("[cms:races] block filter", {
+        slug: block.collection?.slug,
+        blockChampionship,
+        blockMatches,
+        totalEntries: blockEntries.length,
+        matchedEntries: matchedEntries.length,
+      });
+      return matchedEntries;
+    });
+
+    const entries =
+      entriesByBlockAndField.length > 0
+        ? entriesByBlockAndField
+        : // Fallback de sécurité : si aucun match explicite, on prend toutes les entrées.
+          (payload.data ?? []).flatMap((block) => block.data ?? []);
+
+    console.log("[cms:races] selected entries", {
+      explicitMatches: entriesByBlockAndField.length,
+      selectedEntries: entries.length,
+      fallbackToAllEntries: entriesByBlockAndField.length === 0,
+    });
+
+    const mapped = entries
+      .map((entry) => {
+        const raceData = mapEntryToRace(entry, locale);
+        if (!raceData) return null;
+        const championshipField = asNonEmpty(entry.data?.championship);
+        const normalizedChampionship =
+          championshipField ? normalizeLinkValue(championshipField) : normalized;
+        const mappedChampionship = mapChampionshipLinkValueToRaw(normalizedChampionship);
+        if (!mappedChampionship) return null;
+        return {
+          ...raceData,
+          championship: mappedChampionship,
+          isSelected: mappedChampionship.linkValue === normalized,
+        };
+      })
+      .filter(
+        (
+          race
+        ): race is {
+          race: Race;
+          timestamp: number;
+          championship: ChampionshipRaw;
+          isSelected: boolean;
+        } => race !== null
+      );
+    console.log("[cms:races] mapped entries", {
+      mapped: mapped.length,
+      dropped: entries.length - mapped.length,
+    });
+
+    const now = Date.now();
+    const upcoming = mapped
+      .filter((item) => item.timestamp >= now)
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map((item) => ({
+        race: item.race,
+        championship: item.championship,
+        isSelected: item.isSelected,
+      }));
+    if (upcoming.length > 0) {
+      const prioritizedUpcoming = [
+        ...upcoming.filter((item) => item.isSelected),
+        ...upcoming.filter((item) => !item.isSelected),
+      ].map(({ race, championship }) => ({ race, championship }));
+      console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
+      return { ok: true, data: prioritizedUpcoming, source: "upcoming" };
+    }
+
+    const past = mapped
+      .filter((item) => item.timestamp < now)
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .map((item) => ({
+        race: item.race,
+        championship: item.championship,
+        isSelected: item.isSelected,
+      }));
+    const prioritizedPast = [
+      ...past.filter((item) => item.isSelected),
+      ...past.filter((item) => !item.isSelected),
+    ].map(({ race, championship }) => ({ race, championship }));
+    console.log("[cms:races] result", { source: "past", count: past.length });
+    return { ok: true, data: prioritizedPast, source: "past" };
+  } catch (error) {
+    console.warn("[cms] upcoming races fetch failed:", error);
+    return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+  }
+};
