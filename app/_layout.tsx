@@ -1,4 +1,6 @@
 import "@/lib/i18n";
+import { CmsPrefetch } from "@/components/providers/cms-prefetch";
+import { AppQueryProvider } from "@/components/providers/query-provider";
 import { UserPreferencesSync } from "@/components/user-preferences-sync";
 import { AuthProvider } from "@/contexts/auth-context";
 import { LanguageProvider } from "@/contexts/language-context";
@@ -29,21 +31,27 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <AppThemeProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <NotificationsProvider>
-              <UserPreferencesSync />
-              <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
-              <Stack.Screen name="index" options={{ animation: "none" }} />
-              <Stack.Screen name="onBoarding" options={{ animation: "slide_from_left" }} />
-              <Stack.Screen name="advanced-settings" options={{ animation: "slide_from_right" }} />
-            </Stack>
-              <StatusBarTheme />
-            </NotificationsProvider>
-          </AuthProvider>
-        </LanguageProvider>
-      </AppThemeProvider>
+      <AppQueryProvider>
+        <AppThemeProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <NotificationsProvider>
+                <UserPreferencesSync />
+              <CmsPrefetch />
+                <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
+                  <Stack.Screen name="index" options={{ animation: "none" }} />
+                  <Stack.Screen name="onBoarding" options={{ animation: "slide_from_left" }} />
+                  <Stack.Screen
+                    name="advanced-settings"
+                    options={{ animation: "slide_from_right" }}
+                  />
+                </Stack>
+                <StatusBarTheme />
+              </NotificationsProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </AppThemeProvider>
+      </AppQueryProvider>
     </ThemeProvider>
   );
 }

@@ -6,11 +6,11 @@ import {
 } from "@/components/ui";
 import { colors as paletteColors } from "@/constants/theme";
 import {
-  fetchUpcomingRacesByChampionship,
   type ChampionshipRaceFeedItem,
 } from "@/lib/api/cms/controllers/championship.controller";
 import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
 import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
+import { useUpcomingRacesFeed } from "@/hooks/use-upcoming-races-feed";
 import { useTheme } from "@/contexts/theme-context";
 import { ImageBackground } from "expo-image";
 import { ChevronRight, Clock } from "lucide-react-native";
@@ -26,10 +26,6 @@ export default function HomeScreen() {
     error: championshipsError,
     isLoading: championshipsLoading,
   } = useChampionshipsCatalog();
-  const [upcomingRaces, setUpcomingRaces] = useState<ChampionshipRaceFeedItem[]>([]);
-  const [upcomingRacesSource, setUpcomingRacesSource] = useState<"upcoming" | "past">("upcoming");
-  const [upcomingRacesLoading, setUpcomingRacesLoading] = useState(false);
-  const [upcomingRacesError, setUpcomingRacesError] = useState<string | null>(null);
   const [selectedChampionship, setSelectedChampionship] = useState<
     string | null
   >("ELMS");
@@ -44,15 +40,16 @@ export default function HomeScreen() {
     () => championshipsRaw.find((champ) => champ.id === selectedChampionship) ?? null,
     [championshipsRaw, selectedChampionship]
   );
+  const {
+    races: upcomingRaces,
+    source: upcomingRacesSource,
+    error: upcomingRacesError,
+    isLoading: upcomingRacesLoading,
+  } = useUpcomingRacesFeed(i18n.language);
 
-  const selectedChampionshipRaces = useMemo(() => {
+  const selectedChampionshipRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
     if (!selectedChampionshipItem) return upcomingRaces;
     return upcomingRaces.filter((item) => item.championship.id === selectedChampionshipItem.id);
-  }, [upcomingRaces, selectedChampionshipItem]);
-
-  const otherChampionshipRaces = useMemo(() => {
-    if (!selectedChampionshipItem) return [];
-    return upcomingRaces.filter((item) => item.championship.id !== selectedChampionshipItem.id);
   }, [upcomingRaces, selectedChampionshipItem]);
 
   useEffect(() => {
@@ -64,49 +61,6 @@ export default function HomeScreen() {
       setSelectedChampionship(championshipsRaw[0].id);
     }
   }, [championshipsRaw, championshipsError, selectedChampionship]);
-
-  useEffect(() => {
-    const linkValue = selectedChampionshipItem?.linkValue;
-    if (!linkValue) {
-      setUpcomingRaces([]);
-      setUpcomingRacesSource("upcoming");
-      setUpcomingRacesError(null);
-      return;
-    }
-
-    let cancelled = false;
-    setUpcomingRacesLoading(true);
-    setUpcomingRacesError(null);
-
-    (async () => {
-      const result = await fetchUpcomingRacesByChampionship(linkValue, i18n.language);
-      if (cancelled) return;
-      if (result.ok) {
-        console.log("[home:races] fetch result", {
-          selectedChampionshipId: selectedChampionshipItem?.id,
-          linkValue,
-          source: result.source,
-          count: result.data.length,
-        });
-        setUpcomingRaces(result.data);
-        setUpcomingRacesSource(result.source);
-      } else {
-        console.warn("[home:races] fetch error", {
-          selectedChampionshipId: selectedChampionshipItem?.id,
-          linkValue,
-          error: result.error,
-        });
-        setUpcomingRaces([]);
-        setUpcomingRacesSource("upcoming");
-        setUpcomingRacesError(result.error);
-      }
-      setUpcomingRacesLoading(false);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedChampionshipItem?.linkValue, i18n.language]);
 
   return (
     <ScrollView
@@ -219,34 +173,6 @@ export default function HomeScreen() {
                     </View>
                   ))}
                 </ScrollView>
-                {otherChampionshipRaces.length > 0 && (
-                  <>
-                    <Text style={[styles.racesSlideTitle, { color: colors.textMuted }]}>
-                      Autres championnats
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={styles.racesSlideRow}
-                    >
-                      {otherChampionshipRaces.map((race) => (
-                        <View
-                          key={`${race.championship.id}-${race.race.name}-${race.race.date}`}
-                          style={styles.racesSlideCard}
-                        >
-                          <UpcomingRaceCard
-                            championship={{
-                              id: race.championship.id,
-                              name: getChampionshipDisplayName(race.championship, t),
-                              color: race.championship.color,
-                            }}
-                            race={race.race}
-                          />
-                        </View>
-                      ))}
-                    </ScrollView>
-                  </>
-                )}
               </View>
             )}
           </>
@@ -324,11 +250,6 @@ const styles = StyleSheet.create({
   },
   championshipsFilterWrap: {
     marginTop: 12,
-  },
-  racesSlideTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginTop: 4,
   },
   racesSlidesContainer: {
     marginTop: 12,

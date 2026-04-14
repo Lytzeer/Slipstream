@@ -9,6 +9,34 @@ import type { ChampionshipRaw, Race } from "@/types";
 /** Conservé pour compatibilité legacy ; le flux principal est 100% CMS dynamique. */
 export const CHAMPIONSHIPS_CATALOG_FALLBACK: ChampionshipRaw[] = [];
 
+const CMS_CACHE_TTL_MS = 90_000;
+
+type CacheEntry<T> = {
+  value: T;
+  expiresAt: number;
+};
+
+const championshipsCatalogCache = new Map<string, CacheEntry<FetchChampionshipsCatalogResult>>();
+const championshipsCatalogInFlight = new Map<string, Promise<FetchChampionshipsCatalogResult>>();
+const upcomingRacesCache = new Map<string, CacheEntry<FetchUpcomingRacesResult>>();
+const upcomingRacesInFlight = new Map<string, Promise<FetchUpcomingRacesResult>>();
+const upcomingRacesFeedCache = new Map<string, CacheEntry<FetchUpcomingRacesFeedResult>>();
+const upcomingRacesFeedInFlight = new Map<string, Promise<FetchUpcomingRacesFeedResult>>();
+
+const getCached = <T>(store: Map<string, CacheEntry<T>>, key: string): T | null => {
+  const hit = store.get(key);
+  if (!hit) return null;
+  if (hit.expiresAt <= Date.now()) {
+    store.delete(key);
+    return null;
+  }
+  return hit.value;
+};
+
+const setCached = <T>(store: Map<string, CacheEntry<T>>, key: string, value: T): void => {
+  store.set(key, { value, expiresAt: Date.now() + CMS_CACHE_TTL_MS });
+};
+
 const normalizeLinkValue = (value: string): string =>
   value
     .trim()
@@ -113,22 +141,38 @@ export type FetchChampionshipsCatalogResult =
 
 export const fetchChampionshipsCatalog =
   async (): Promise<FetchChampionshipsCatalogResult> => {
+    const cacheKey = "championships-catalog:published";
+    const cached = getCached(championshipsCatalogCache, cacheKey);
+    if (cached) return cached;
+
+    const inFlight = championshipsCatalogInFlight.get(cacheKey);
+    if (inFlight) return inFlight;
+
     const base = getCmsApiBaseUrlFromEnv();
     if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
 
-    try {
-      const res = await fetch(buildChampionshipGroupContentUrl(base, { status: "published" }));
-      if (!res.ok) {
-        console.warn("[cms] championship group:", res.status, res.statusText);
+    const request = (async (): Promise<FetchChampionshipsCatalogResult> => {
+      try {
+        const res = await fetch(buildChampionshipGroupContentUrl(base, { status: "published" }));
+        if (!res.ok) {
+          console.warn("[cms] championship group:", res.status, res.statusText);
+          return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+        }
+        const json = await parseCmsChampionshipGroupJson(res);
+        const data = mapGroupChampionshipResponseToCatalog(json);
+        const result: FetchChampionshipsCatalogResult = { ok: true, data };
+        setCached(championshipsCatalogCache, cacheKey, result);
+        return result;
+      } catch (e) {
+        console.warn("[cms] championship group fetch failed:", e);
         return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+      } finally {
+        championshipsCatalogInFlight.delete(cacheKey);
       }
-      const json = await parseCmsChampionshipGroupJson(res);
-      const data = mapGroupChampionshipResponseToCatalog(json);
-      return { ok: true, data };
-    } catch (e) {
-      console.warn("[cms] championship group fetch failed:", e);
-      return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
-    }
+    })();
+
+    championshipsCatalogInFlight.set(cacheKey, request);
+    return request;
   };
 
 export type ChampionshipRaceFeedItem = {
@@ -137,6 +181,10 @@ export type ChampionshipRaceFeedItem = {
 };
 
 type FetchUpcomingRacesResult =
+  | { ok: true; data: ChampionshipRaceFeedItem[]; source: "upcoming" | "past" }
+  | { ok: false; error: string };
+
+export type FetchUpcomingRacesFeedResult =
   | { ok: true; data: ChampionshipRaceFeedItem[]; source: "upcoming" | "past" }
   | { ok: false; error: string };
 
@@ -194,129 +242,133 @@ export const fetchUpcomingRacesByChampionship = async (
   championshipLinkValue: string,
   locale: string
 ): Promise<FetchUpcomingRacesResult> => {
-  const base = getCmsApiBaseUrlFromEnv();
-  if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
-
   const normalized = normalizeLinkValue(championshipLinkValue);
   if (!normalized) return { ok: true, data: [], source: "upcoming" };
 
-  try {
-    const url = buildChampionshipGroupContentUrl(base, {
-      status: "published",
-      limit: 50,
-    });
-    console.log("[cms:races] request", {
-      championshipLinkValue,
-      normalized,
-      locale,
-      url,
-    });
-    const response = await fetch(url);
-    if (!response.ok) {
-      console.warn("[cms] upcoming races:", response.status, response.statusText);
-      return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
-    }
-    const payload = await parseCmsChampionshipGroupJson(response);
-    console.log("[cms:races] payload meta", {
-      collectionsCount: payload.meta?.collectionsCount,
-      totalItems: payload.meta?.totalItems,
-      blocks: payload.data?.length ?? 0,
-    });
-    const entriesByBlockAndField = (payload.data ?? []).flatMap((block) => {
-      const blockChampionship = championshipFromCollectionSlug(block.collection?.slug ?? "");
-      const blockMatches = blockChampionship === normalized;
-      const blockEntries = block.data ?? [];
-      const matchedEntries = blockEntries.filter((entry) => {
-        const champField = asNonEmpty(entry.data?.championship);
-        const fieldMatches = champField ? normalizeLinkValue(champField) === normalized : false;
-        return blockMatches || fieldMatches;
+  const feed = await fetchUpcomingRacesFeed(locale);
+  if (!feed.ok) return feed;
+
+  const selected = feed.data.filter((item) => item.championship.linkValue === normalized);
+  const others = feed.data.filter((item) => item.championship.linkValue !== normalized);
+  return {
+    ok: true,
+    source: feed.source,
+    data: [...selected, ...others],
+  };
+};
+
+export const fetchUpcomingRacesFeed = async (
+  locale: string
+): Promise<FetchUpcomingRacesFeedResult> => {
+  const feedCacheKey = `upcoming-races-feed:${locale || "fr"}`;
+  const cachedFeed = getCached(upcomingRacesFeedCache, feedCacheKey);
+  if (cachedFeed) return cachedFeed;
+
+  const inFlightFeed = upcomingRacesFeedInFlight.get(feedCacheKey);
+  if (inFlightFeed) return inFlightFeed;
+
+  const base = getCmsApiBaseUrlFromEnv();
+  if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+
+  const request = (async (): Promise<FetchUpcomingRacesFeedResult> => {
+    try {
+      const url = buildChampionshipGroupContentUrl(base, {
+        status: "published",
+        limit: 50,
       });
-      console.log("[cms:races] block filter", {
-        slug: block.collection?.slug,
-        blockChampionship,
-        blockMatches,
-        totalEntries: blockEntries.length,
-        matchedEntries: matchedEntries.length,
+      console.log("[cms:races] request", {
+        locale,
+        url,
       });
-      return matchedEntries;
-    });
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.warn("[cms] upcoming races:", response.status, response.statusText);
+        return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+      }
+      const payload = await parseCmsChampionshipGroupJson(response);
+      console.log("[cms:races] payload meta", {
+        collectionsCount: payload.meta?.collectionsCount,
+        totalItems: payload.meta?.totalItems,
+        blocks: payload.data?.length ?? 0,
+      });
+      const entries = (payload.data ?? []).flatMap((block) => block.data ?? []);
 
-    const entries =
-      entriesByBlockAndField.length > 0
-        ? entriesByBlockAndField
-        : // Fallback de sécurité : si aucun match explicite, on prend toutes les entrées.
-          (payload.data ?? []).flatMap((block) => block.data ?? []);
+      const mapped = entries
+        .map((entry) => {
+          const raceData = mapEntryToRace(entry, locale);
+          if (!raceData) return null;
+          const championshipField = asNonEmpty(entry.data?.championship);
+          const normalizedChampionship = championshipField
+            ? normalizeLinkValue(championshipField)
+            : "";
+          const mappedChampionship = mapChampionshipLinkValueToRaw(normalizedChampionship);
+          if (!mappedChampionship) return null;
+          return {
+            ...raceData,
+            championship: mappedChampionship,
+          };
+        })
+        .filter(
+          (
+            race
+          ): race is {
+            race: Race;
+            timestamp: number;
+            championship: ChampionshipRaw;
+          } => race !== null
+        );
+      console.log("[cms:races] mapped entries", {
+        mapped: mapped.length,
+        dropped: entries.length - mapped.length,
+      });
 
-    console.log("[cms:races] selected entries", {
-      explicitMatches: entriesByBlockAndField.length,
-      selectedEntries: entries.length,
-      fallbackToAllEntries: entriesByBlockAndField.length === 0,
-    });
-
-    const mapped = entries
-      .map((entry) => {
-        const raceData = mapEntryToRace(entry, locale);
-        if (!raceData) return null;
-        const championshipField = asNonEmpty(entry.data?.championship);
-        const normalizedChampionship =
-          championshipField ? normalizeLinkValue(championshipField) : normalized;
-        const mappedChampionship = mapChampionshipLinkValueToRaw(normalizedChampionship);
-        if (!mappedChampionship) return null;
-        return {
-          ...raceData,
-          championship: mappedChampionship,
-          isSelected: mappedChampionship.linkValue === normalized,
+      const now = Date.now();
+      const upcoming = mapped
+        .filter((item) => item.timestamp >= now)
+        .sort((a, b) => a.timestamp - b.timestamp)
+        .map((item) => ({
+          race: item.race,
+          championship: item.championship,
+        }));
+      if (upcoming.length > 0) {
+        console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
+        const result: FetchUpcomingRacesFeedResult = {
+          ok: true,
+          data: upcoming,
+          source: "upcoming",
         };
-      })
-      .filter(
-        (
-          race
-        ): race is {
-          race: Race;
-          timestamp: number;
-          championship: ChampionshipRaw;
-          isSelected: boolean;
-        } => race !== null
-      );
-    console.log("[cms:races] mapped entries", {
-      mapped: mapped.length,
-      dropped: entries.length - mapped.length,
-    });
+        setCached(upcomingRacesFeedCache, feedCacheKey, result);
+        return result;
+      }
 
-    const now = Date.now();
-    const upcoming = mapped
-      .filter((item) => item.timestamp >= now)
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .map((item) => ({
-        race: item.race,
-        championship: item.championship,
-        isSelected: item.isSelected,
-      }));
-    if (upcoming.length > 0) {
-      const prioritizedUpcoming = [
-        ...upcoming.filter((item) => item.isSelected),
-        ...upcoming.filter((item) => !item.isSelected),
-      ].map(({ race, championship }) => ({ race, championship }));
-      console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
-      return { ok: true, data: prioritizedUpcoming, source: "upcoming" };
+      const past = mapped
+        .filter((item) => item.timestamp < now)
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .map((item) => ({
+          race: item.race,
+          championship: item.championship,
+        }));
+      console.log("[cms:races] result", { source: "past", count: past.length });
+      const result: FetchUpcomingRacesFeedResult = { ok: true, data: past, source: "past" };
+      setCached(upcomingRacesFeedCache, feedCacheKey, result);
+      return result;
+    } catch (error) {
+      console.warn("[cms] upcoming races fetch failed:", error);
+      return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+    } finally {
+      upcomingRacesFeedInFlight.delete(feedCacheKey);
     }
+  })();
 
-    const past = mapped
-      .filter((item) => item.timestamp < now)
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .map((item) => ({
-        race: item.race,
-        championship: item.championship,
-        isSelected: item.isSelected,
-      }));
-    const prioritizedPast = [
-      ...past.filter((item) => item.isSelected),
-      ...past.filter((item) => !item.isSelected),
-    ].map(({ race, championship }) => ({ race, championship }));
-    console.log("[cms:races] result", { source: "past", count: past.length });
-    return { ok: true, data: prioritizedPast, source: "past" };
-  } catch (error) {
-    console.warn("[cms] upcoming races fetch failed:", error);
-    return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
-  }
+  upcomingRacesFeedInFlight.set(feedCacheKey, request);
+  return request;
+};
+
+export const invalidateChampionshipCmsCache = () => {
+  championshipsCatalogCache.clear();
+  championshipsCatalogInFlight.clear();
+  upcomingRacesCache.clear();
+  upcomingRacesInFlight.clear();
+  upcomingRacesFeedCache.clear();
+  upcomingRacesFeedInFlight.clear();
 };
