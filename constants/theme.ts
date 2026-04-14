@@ -48,10 +48,13 @@ export const themeColors = {
 
 export type ColorScheme = keyof typeof themeColors;
 
-// Legacy (collapsible, use-theme-color)
-const tintLight = "#0a7ea4";
-/** Accent / liens en mode sombre — aligné sur le texte principal (#111828) */
-const tintDark = "#ECEDEE";
+// En-têtes modals (langue, championnats) — léger en clair, bande claire sur fond sombre
+export const tintLight = "#0a7ea4";
+export const tintDark = "#ECEDEE";
+
+/** Texte / icônes sur l’en-tête modal (contraste avec tintLight ou tintDark) */
+export const modalHeaderForeground = (isDark: boolean) => (isDark ? "#111828" : "#ffffff");
+
 export const Colors = {
   light: {
     text: "#11181C",

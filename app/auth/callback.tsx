@@ -7,7 +7,7 @@
 import {
   authController,
   extractTokensFromUrl,
-} from "@/lib/controllers/auth.controller";
+} from "@/lib/database/controllers/auth.controller";
 import { requestNotificationPermission } from "@/lib/notifications";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
@@ -28,6 +28,50 @@ export default function AuthCallback() {
         return;
       }
 
+      const completeSuccess = () => {
+        handled.current = true;
+        setStatus("success");
+        router.replace("/(tabs)");
+        setTimeout(() => {
+          requestNotificationPermission();
+        }, 3000);
+      };
+
+      // Web: Supabase peut déjà avoir finalisé la session via detectSessionInUrl.
+      const {
+        data: { session: existingSession },
+      } = await authController.getSession();
+      if (existingSession) {
+        completeSuccess();
+        return;
+      }
+
+      if (Platform.OS === "web") {
+        try {
+          const parsedUrl = new URL(url);
+          const code = parsedUrl.searchParams.get("code");
+          if (code) {
+            const { error } = await authController.exchangeCodeForSession(code);
+            if (error) {
+              // On retente une lecture session : elle peut avoir été posée malgré tout.
+              const {
+                data: { session },
+              } = await authController.getSession();
+              if (!session) {
+                setStatus("error");
+                return;
+              }
+              completeSuccess();
+              return;
+            }
+            completeSuccess();
+            return;
+          }
+        } catch {
+          // noop: fallback sur extraction hash
+        }
+      }
+
       const { access_token, refresh_token } = extractTokensFromUrl(url);
       if (!access_token || !refresh_token) {
         setStatus("error");
@@ -46,11 +90,7 @@ export default function AuthCallback() {
         return;
       }
 
-      setStatus("success");
-      router.replace("/(tabs)");
-      setTimeout(() => {
-        requestNotificationPermission();
-      }, 3000);
+      completeSuccess();
     };
 
     let subscription: { remove: () => void } | null = null;
@@ -102,7 +142,7 @@ export default function AuthCallback() {
       {status === "error" && (
         <>
           <Text style={styles.errorText}>Erreur lors de la connexion</Text>
-          <Text style={styles.link} onPress={() => router.replace("/login")}>
+          <Text style={styles.link} onPress={() => router.replace("/onBoarding")}>
             Retour à la connexion
           </Text>
         </>

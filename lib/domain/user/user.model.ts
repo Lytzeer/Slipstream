@@ -1,8 +1,7 @@
 /**
- * MODEL - Données utilisateur
+ * DOMAIN — User
  *
- * Couche données : helpers pour formater les infos utilisateur Supabase Auth.
- * Pas de logique métier, uniquement transformation de données.
+ * Helpers purs de présentation utilisateur (pas d'accès réseau / DB).
  */
 
 import type { User } from "@supabase/supabase-js";

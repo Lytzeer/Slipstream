@@ -6,7 +6,7 @@ import {
   authController,
   extractTokensFromUrl,
   getRedirectUrl,
-} from "@/lib/controllers/auth.controller";
+} from "@/lib/database/controllers/auth.controller";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -62,6 +62,10 @@ export const GoogleSignInButton = (props: { onError?: (message?: string) => void
       if (error) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         props.onError?.(error.message);
+        return;
+      }
+      if (Platform.OS === "web") {
+        // Sur web, Supabase gère la redirection complète (pas de popup).
         return;
       }
       const googleOAuthUrl = data.url;

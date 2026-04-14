@@ -8,7 +8,7 @@ import { useTheme } from "@/contexts/theme-context";
 import {
   fetchUserPreferences,
   upsertUserPreferences,
-} from "@/lib/repositories/user-preferences.repository";
+} from "@/lib/database/controllers/user-preferences.controller";
 import React, { useEffect, useState } from "react";
 
 const UPSERT_DEBOUNCE_MS = 500;
