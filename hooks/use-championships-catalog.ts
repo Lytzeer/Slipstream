@@ -1,49 +1,29 @@
 import { fetchChampionshipsCatalog } from "@/lib/api/cms/controllers/championship.controller";
+import { useQuery } from "@tanstack/react-query";
 import type { ChampionshipRaw } from "@/types";
-import { useCallback, useEffect, useState } from "react";
-
-type State = {
-  championships: ChampionshipRaw[];
-  isLoading: boolean;
-  /** Clé i18n (`cms.apiError`) si l’API a échoué — pas de données mock */
-  error: string | null;
-};
+import { useMemo } from "react";
 
 /**
  * Charge le catalogue championnats depuis le CMS uniquement (aucun repli local).
  */
 export const useChampionshipsCatalog = () => {
-  const [state, setState] = useState<State>({
-    championships: [],
-    isLoading: true,
-    error: null,
+  const query = useQuery({
+    queryKey: ["cms", "championships-catalog"],
+    queryFn: fetchChampionshipsCatalog,
+    staleTime: 90_000,
   });
 
-  const refetch = useCallback(async () => {
-    setState((s) => ({ ...s, isLoading: true, error: null }));
-    const result = await fetchChampionshipsCatalog();
-    if (result.ok) {
-      setState({ championships: result.data, isLoading: false, error: null });
-    } else {
-      setState({ championships: [], isLoading: false, error: result.error });
-    }
-  }, []);
+  const championships = useMemo<ChampionshipRaw[]>(() => {
+    if (!query.data?.ok) return [];
+    return query.data.data;
+  }, [query.data]);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const result = await fetchChampionshipsCatalog();
-      if (cancelled) return;
-      if (result.ok) {
-        setState({ championships: result.data, isLoading: false, error: null });
-      } else {
-        setState({ championships: [], isLoading: false, error: result.error });
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const error = query.data && !query.data.ok ? query.data.error : null;
 
-  return { ...state, refetch };
+  return {
+    championships,
+    isLoading: query.isLoading || query.isFetching,
+    error,
+    refetch: () => query.refetch(),
+  };
 };
