@@ -6,7 +6,7 @@
 
 import { AuthFormLayout, ScreenHeader } from "@/components/layout";
 import { Button, InputSection } from "@/components/ui";
-import { authController, getAuthCallbackUrl } from "@/lib/controllers/auth.controller";
+import { authController, getAuthCallbackUrl } from "@/lib/database/controllers/auth.controller";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Mail } from "lucide-react-native";

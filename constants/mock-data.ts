@@ -1,10 +1,4 @@
-import type { CalendarRace, ChampionshipRaw, NewsArticle } from "@/types";
-
-export const championshipsList: ChampionshipRaw[] = [
-  { id: "ELMS", nameKey: "championships.ELMS", color: "#FF3B31" },
-  { id: "LMC", nameKey: "championships.LMC", color: "#FF9502" },
-  { id: "GTWORLD", nameKey: "championships.GTWORLD", color: "#31D158" },
-];
+export { CHAMPIONSHIPS_CATALOG_FALLBACK as championshipsList } from "@/lib/api/cms/controllers/championship.controller";
 
 export type SavedArticle = {
   id: string;

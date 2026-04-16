@@ -21,11 +21,9 @@ type Props = {
   onClose: () => void;
 };
 
-const HEADER_ORANGE = "#FF9502";
-
 export const LanguageModal = ({ visible, onClose }: Props) => {
   const { locale, setLocale } = useLanguage();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const [selectedLocale, setSelectedLocale] = useState<Locale>(locale);
   const [isApplying, setIsApplying] = useState(false);
@@ -63,15 +61,24 @@ export const LanguageModal = ({ visible, onClose }: Props) => {
     >
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable style={[styles.modal, { backgroundColor: colors.surface }]} onPress={(e) => e.stopPropagation()}>
-          <View style={[styles.header, { backgroundColor: HEADER_ORANGE }]}>
-            <Globe size={22} color="#fff" />
-            <Text style={styles.headerTitle}>{t("language.chooseLanguage")}</Text>
+          <View style={[styles.header, { backgroundColor: colors.surfaceAlt }]}>
+            <Globe size={22} color={colors.text} />
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              {t("language.chooseLanguage")}
+            </Text>
             <TouchableOpacity
               onPress={onClose}
               hitSlop={12}
-              style={styles.closeBtn}
+              style={[
+                styles.closeBtn,
+                {
+                  backgroundColor: isDark
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(0,0,0,0.06)",
+                },
+              ]}
             >
-              <X size={20} color="#fff" />
+              <X size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -160,7 +167,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: "600",
-    color: "#fff",
   },
   closeBtn: {
     width: 32,

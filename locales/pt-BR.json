@@ -8,6 +8,9 @@
     "user": "Usuário",
     "all": "Todos"
   },
+  "cms": {
+    "apiError": "Erro da API"
+  },
   "home": {
     "featured": "Em destaque",
     "lastNews": "Últimas notícias",
@@ -42,16 +45,22 @@
     "darkModeOff": "Desativado",
     "language": "Idioma",
     "followedChampionships": "Campeonatos seguidos",
+    "followedChampionshipsHint": "Essas opções filtram notícias e alertas de cada campeonato.",
     "savedArticles": "Artigos salvos",
     "other": "Outros",
     "advancedSettings": "Configurações avançadas",
     "about": "Sobre",
+    "logout": "Sair",
+    "logoutSubtitle": "Sair desta conta neste dispositivo",
+    "sessionManagedBySupabase": "Sessão",
+    "sessionManagedBySupabaseHint": "A autenticação é gerenciada pelo Supabase",
     "memberSince": "Membro desde {{month}} {{year}}"
   },
   "championships": {
     "ELMS": "ELMS",
     "LMC": "Le Mans Cup",
-    "GTWORLD": "GT World"
+    "GTWORLD": "GT World",
+    "WEC": "WEC"
   },
   "articles": {
     "saved1": "Retrospectiva da vitória histórica nas 24H de Le Mans",
@@ -129,7 +138,11 @@
     "race4Name": "4 Horas de Portimão",
     "race4Circuit": "Autódromo Internacional do Algarve",
     "race5Name": "Le Mans Cup Barcelona",
-    "race5Circuit": "Circuit de Catalunya"
+    "race5Circuit": "Circuit de Catalunya",
+    "addSuccess": "Corrida adicionada ao calendário",
+    "addError": "Não foi possível adicionar a corrida",
+    "permissionRequired": "Permissão necessária",
+    "permissionDenied": "Permita o acesso ao calendário nas configurações"
   },
   "news": {
     "title": "Notícias",

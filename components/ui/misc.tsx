@@ -67,7 +67,7 @@ export const SettingRow = ({
       {Icon &&
         (iconBgColor ? (
           <View style={[miscStyles.iconWrapper, { backgroundColor: iconBgColor }]}>
-            <Icon size={20} color="#fff" />
+            <Icon size={20} color={iconColor ?? "#fff"} />
           </View>
         ) : (
           <Icon size={20} color={iconColor ?? colors.textSecondary} />
