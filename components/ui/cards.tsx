@@ -1,7 +1,13 @@
 import { useTheme } from "@/contexts/theme-context";
 import type { Championship, Race } from "@/types";
 import { Image } from "expo-image";
-import { Bookmark, CalendarDays, Clock, MapPin, Plus } from "lucide-react-native";
+import {
+  Bookmark,
+  CalendarDays,
+  Clock,
+  MapPin,
+  Plus,
+} from "lucide-react-native";
 import { MotiView } from "moti";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -196,6 +202,7 @@ type CalendarRaceCardProps = {
   date: string;
   index: number;
   addLabel: string;
+  onAdd?: () => void;
 };
 
 export function CalendarRaceCard({
@@ -206,6 +213,7 @@ export function CalendarRaceCard({
   date,
   index,
   addLabel,
+  onAdd,
 }: CalendarRaceCardProps) {
   const { colors } = useTheme();
   return (
@@ -214,27 +222,44 @@ export function CalendarRaceCard({
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ type: "timing", duration: 300, delay: index * 50 }}
     >
-      <View style={[cardStyles.calendarCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View
+        style={[
+          cardStyles.calendarCard,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+        ]}
+      >
         <View style={cardStyles.calendarCardHeader}>
-          <View style={[cardStyles.champBadge, { backgroundColor: championship.color }]}>
-            <Text style={cardStyles.champBadgeText}>{championship.name}</Text>
-          </View>
-          <Pressable style={[cardStyles.addButton, { borderColor: colors.border }]}>
+          <ChampionshipBadge champ={championship} />
+          <Pressable
+            style={[cardStyles.addButton, { borderColor: colors.border }]}
+            onPress={onAdd}
+          >
             <Plus size={14} color={colors.text} />
-            <Text style={[cardStyles.addButtonText, { color: colors.text }]}>{addLabel}</Text>
+            <Text style={[cardStyles.addButtonText, { color: colors.text }]}>
+              {addLabel}
+            </Text>
           </Pressable>
         </View>
-        <Text style={[cardStyles.calendarRaceName, { color: colors.text }]}>{name}</Text>
+        <Text style={[cardStyles.calendarRaceName, { color: colors.text }]}>
+          {name}
+        </Text>
         <View style={cardStyles.calendarMeta}>
           <View style={cardStyles.calendarMetaRow}>
             <MapPin size={14} color={colors.textMuted} />
-            <Text style={[cardStyles.calendarMetaText, { color: colors.textMuted }]}>{circuit}, {country}</Text>
+            <Text
+              style={[cardStyles.calendarMetaText, { color: colors.textMuted }]}
+            >
+              {circuit}, {country}
+            </Text>
           </View>
           <View style={cardStyles.calendarMetaRow}>
             <CalendarDays size={14} color={colors.textMuted} />
-            <Text style={[cardStyles.calendarMetaText, { color: colors.textMuted }]}>{date}</Text>
+            <Text
+              style={[cardStyles.calendarMetaText, { color: colors.textMuted }]}
+            >
+              {date}
+            </Text>
           </View>
-
         </View>
       </View>
     </MotiView>
@@ -265,19 +290,45 @@ export function CompletedRaceCard({
       transition={{ type: "timing", duration: 300, delay: index * 50 }}
       style={{ opacity: 0.6 }}
     >
-      <View style={[cardStyles.completedCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View
+        style={[
+          cardStyles.completedCard,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+        ]}
+      >
         <View style={cardStyles.calendarCardHeader}>
-          <View style={[cardStyles.champBadge, { backgroundColor: colors.surfaceAlt }]}>
-            <Text style={[cardStyles.champBadgeText, { color: colors.textMuted }]}>{championship.name}</Text>
-          </View>
-          <View style={[cardStyles.completedBadge, { borderColor: colors.textMuted }]}>
-            <Text style={[cardStyles.completedBadgeText, { color: colors.textMuted }]}>{completedLabel}</Text>
+          <ChampionshipBadge champ={championship} />
+          <View
+            style={[
+              cardStyles.completedBadge,
+              { borderColor: colors.textMuted },
+            ]}
+          >
+            <Text
+              style={[
+                cardStyles.completedBadgeText,
+                { color: colors.textMuted },
+              ]}
+            >
+              {completedLabel}
+            </Text>
           </View>
         </View>
-        <Text style={[cardStyles.calendarRaceName, { color: colors.text, fontSize: 15 }]}>{name}</Text>
+        <Text
+          style={[
+            cardStyles.calendarRaceName,
+            { color: colors.text, fontSize: 15 },
+          ]}
+        >
+          {name}
+        </Text>
         <View style={cardStyles.calendarMetaRow}>
           <MapPin size={14} color={colors.textMuted} />
-          <Text style={[cardStyles.calendarMetaText, { color: colors.textMuted }]}>{circuit}</Text>
+          <Text
+            style={[cardStyles.calendarMetaText, { color: colors.textMuted }]}
+          >
+            {circuit}
+          </Text>
         </View>
       </View>
     </MotiView>
@@ -368,16 +419,6 @@ const cardStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  champBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  champBadgeText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
   },
   addButton: {
     flexDirection: "row",

@@ -67,9 +67,6 @@ const toDynamicColor = (seed: string): string => {
   return `hsl(${hue} 72% 52%)`;
 };
 
-const championshipFromCollectionSlug = (slug: string): string =>
-  normalizeLinkValue(slug.replace(/^calendrier-/, "").replace(/-eu$/, ""));
-
 export const mapChampionshipLinkValueToRaw = (raw: string): ChampionshipRaw | null => {
   const v = normalizeLinkValue(raw);
   if (!v) return null;
@@ -79,7 +76,7 @@ export const mapChampionshipLinkValueToRaw = (raw: string): ChampionshipRaw | nu
     nameKey: "",
     color: toDynamicColor(v),
     linkValue: v,
-    displayLabel: raw.trim() || toDisplayLabel(v),
+    displayLabel: toDisplayLabel(v) || raw.trim(),
   };
 };
 
@@ -178,6 +175,8 @@ export const fetchChampionshipsCatalog =
 export type ChampionshipRaceFeedItem = {
   race: Race;
   championship: ChampionshipRaw;
+  startTimestamp?: number;
+  endTimestamp?: number;
 };
 
 type FetchUpcomingRacesResult =
@@ -185,7 +184,7 @@ type FetchUpcomingRacesResult =
   | { ok: false; error: string };
 
 export type FetchUpcomingRacesFeedResult =
-  | { ok: true; data: ChampionshipRaceFeedItem[]; source: "upcoming" | "past" }
+  | { ok: true; upcoming: ChampionshipRaceFeedItem[]; past: ChampionshipRaceFeedItem[] }
   | { ok: false; error: string };
 
 const asNonEmpty = (value: unknown): string | null => {
@@ -213,7 +212,7 @@ const toTimestamp = (rawDate: string): number | null => {
 const mapEntryToRace = (
   entry: { data: Record<string, unknown> | null },
   locale: string
-): { race: Race; timestamp: number } | null => {
+): { race: Race; startTimestamp: number; endTimestamp?: number } | null => {
   const data = entry.data ?? {};
   const name = asNonEmpty(data.title) ?? asNonEmpty(data.name);
   const circuit =
@@ -222,19 +221,21 @@ const mapEntryToRace = (
     asNonEmpty(data.location) ??
     asNonEmpty(data.track) ??
     asNonEmpty(data.venue);
-  const rawDate =
+  const rawStartDate =
     asNonEmpty(data.start_date) ??
-    asNonEmpty(data.end_date) ??
     asNonEmpty(data.date) ??
     asNonEmpty(data.raceDate) ??
     asNonEmpty(data.startDate) ??
     asNonEmpty(data.datetime);
-  if (!name || !circuit || !rawDate) return null;
-  const timestamp = toTimestamp(rawDate);
-  if (!timestamp) return null;
+  const rawEndDate = asNonEmpty(data.end_date);
+  if (!name || !circuit || !rawStartDate) return null;
+  const startTimestamp = toTimestamp(rawStartDate);
+  if (!startTimestamp) return null;
+  const endTimestamp = rawEndDate ? (toTimestamp(rawEndDate) ?? undefined) : undefined;
   return {
-    race: { name, circuit, date: formatRaceDate(rawDate, locale) },
-    timestamp,
+    race: { name, circuit, date: formatRaceDate(rawStartDate, locale) },
+    startTimestamp,
+    endTimestamp,
   };
 };
 
@@ -248,11 +249,13 @@ export const fetchUpcomingRacesByChampionship = async (
   const feed = await fetchUpcomingRacesFeed(locale);
   if (!feed.ok) return feed;
 
-  const selected = feed.data.filter((item) => item.championship.linkValue === normalized);
-  const others = feed.data.filter((item) => item.championship.linkValue !== normalized);
+  const all = [...feed.upcoming, ...feed.past];
+  const selected = all.filter((item) => item.championship.linkValue === normalized);
+  const others = all.filter((item) => item.championship.linkValue !== normalized);
+  const source = feed.upcoming.length > 0 ? "upcoming" : "past";
   return {
     ok: true,
-    source: feed.source,
+    source,
     data: [...selected, ...others],
   };
 };
@@ -313,7 +316,8 @@ export const fetchUpcomingRacesFeed = async (
             race
           ): race is {
             race: Race;
-            timestamp: number;
+            startTimestamp: number;
+            endTimestamp?: number;
             championship: ChampionshipRaw;
           } => race !== null
         );
@@ -324,32 +328,25 @@ export const fetchUpcomingRacesFeed = async (
 
       const now = Date.now();
       const upcoming = mapped
-        .filter((item) => item.timestamp >= now)
-        .sort((a, b) => a.timestamp - b.timestamp)
+        .filter((item) => item.startTimestamp >= now)
+        .sort((a, b) => a.startTimestamp - b.startTimestamp)
         .map((item) => ({
           race: item.race,
           championship: item.championship,
+          startTimestamp: item.startTimestamp,
+          endTimestamp: item.endTimestamp,
         }));
-      if (upcoming.length > 0) {
-        console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
-        const result: FetchUpcomingRacesFeedResult = {
-          ok: true,
-          data: upcoming,
-          source: "upcoming",
-        };
-        setCached(upcomingRacesFeedCache, feedCacheKey, result);
-        return result;
-      }
-
       const past = mapped
-        .filter((item) => item.timestamp < now)
-        .sort((a, b) => b.timestamp - a.timestamp)
+        .filter((item) => item.startTimestamp < now)
+        .sort((a, b) => b.startTimestamp - a.startTimestamp)
         .map((item) => ({
           race: item.race,
           championship: item.championship,
+          startTimestamp: item.startTimestamp,
+          endTimestamp: item.endTimestamp,
         }));
-      console.log("[cms:races] result", { source: "past", count: past.length });
-      const result: FetchUpcomingRacesFeedResult = { ok: true, data: past, source: "past" };
+      console.log("[cms:races] result", { upcoming: upcoming.length, past: past.length });
+      const result: FetchUpcomingRacesFeedResult = { ok: true, upcoming, past };
       setCached(upcomingRacesFeedCache, feedCacheKey, result);
       return result;
     } catch (error) {

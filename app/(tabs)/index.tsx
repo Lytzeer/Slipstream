@@ -41,8 +41,7 @@ export default function HomeScreen() {
     [championshipsRaw, selectedChampionship]
   );
   const {
-    races: upcomingRaces,
-    source: upcomingRacesSource,
+    upcomingRaces,
     error: upcomingRacesError,
     isLoading: upcomingRacesLoading,
   } = useUpcomingRacesFeed(i18n.language);
@@ -119,7 +118,7 @@ export default function HomeScreen() {
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
         <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
-          {upcomingRacesSource === "past" ? "Courses passees" : t("home.upcomingRaces")}
+          {t("home.upcomingRaces")}
         </Text>
         {championshipsLoading ? (
           <View style={styles.championshipsLoading}>

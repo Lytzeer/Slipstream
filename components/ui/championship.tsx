@@ -1,4 +1,5 @@
 import { useTheme } from "@/contexts/theme-context";
+import type { Championship as ChampionshipType } from "@/types";
 import { MotiView } from "moti";
 import React from "react";
 import {
@@ -9,7 +10,6 @@ import {
   Text,
   View,
 } from "react-native";
-import type { Championship as ChampionshipType } from "@/types";
 
 type Champ = { id: string; name: string; color?: string };
 
@@ -45,7 +45,9 @@ function ChampionshipButton({
       onPress={() => onChampionshipChange(champ.id)}
       style={[champStyles.button, { backgroundColor: bg }]}
     >
-      <Text style={[champStyles.buttonText, { color: textColor }]}>{champ.name}</Text>
+      <Text style={[champStyles.buttonText, { color: textColor }]}>
+        {champ.name}
+      </Text>
     </Pressable>
   );
 }
