@@ -202,6 +202,7 @@ type CalendarRaceCardProps = {
   date: string;
   index: number;
   addLabel: string;
+  onAdd?: () => void;
 };
 
 export function CalendarRaceCard({
@@ -212,6 +213,7 @@ export function CalendarRaceCard({
   date,
   index,
   addLabel,
+  onAdd,
 }: CalendarRaceCardProps) {
   const { colors } = useTheme();
   return (
@@ -230,6 +232,7 @@ export function CalendarRaceCard({
           <ChampionshipBadge champ={championship} />
           <Pressable
             style={[cardStyles.addButton, { borderColor: colors.border }]}
+            onPress={onAdd}
           >
             <Plus size={14} color={colors.text} />
             <Text style={[cardStyles.addButtonText, { color: colors.text }]}>

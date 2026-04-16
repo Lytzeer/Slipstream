@@ -1,5 +1,6 @@
 import { CalendarRaceCard, ChampionshipSelector, CompletedRaceCard } from "@/components/ui";
 import { useTheme } from "@/contexts/theme-context";
+import { useAddRaceToCalendar } from "@/hooks/use-add-race-to-calendar";
 import { useUpcomingRacesFeed } from "@/hooks/use-upcoming-races-feed";
 import type { Championship, ChampionshipRaw } from "@/types";
 import { useMemo, useState } from "react";
@@ -18,6 +19,7 @@ export default function CalendarScreen() {
   const [selectedChampionship, setSelectedChampionship] = useState<string>("all");
 
   const { races, source, isLoading } = useUpcomingRacesFeed(i18n.language);
+  const { addRaceToCalendar } = useAddRaceToCalendar();
 
   const championships = useMemo(() => {
     const seen = new Set<string>();
@@ -85,6 +87,7 @@ export default function CalendarScreen() {
                     country=""
                     date={item.race.date}
                     addLabel={t("calendar.add")}
+                    onAdd={() => addRaceToCalendar(item)}
                   />
                 ))}
           </View>

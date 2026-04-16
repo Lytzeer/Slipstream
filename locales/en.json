@@ -138,7 +138,11 @@
     "race4Name": "4 Hours of Portimão",
     "race4Circuit": "Autódromo Internacional do Algarve",
     "race5Name": "Le Mans Cup Barcelona",
-    "race5Circuit": "Circuit de Catalunya"
+    "race5Circuit": "Circuit de Catalunya",
+    "addSuccess": "Race added to calendar",
+    "addError": "Could not add race to calendar",
+    "permissionRequired": "Permission required",
+    "permissionDenied": "Please allow calendar access in settings"
   },
   "tabs": {
     "home": "Home",

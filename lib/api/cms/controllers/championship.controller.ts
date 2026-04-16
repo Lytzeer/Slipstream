@@ -175,6 +175,7 @@ export const fetchChampionshipsCatalog =
 export type ChampionshipRaceFeedItem = {
   race: Race;
   championship: ChampionshipRaw;
+  timestamp?: number;
 };
 
 type FetchUpcomingRacesResult =
@@ -326,6 +327,7 @@ export const fetchUpcomingRacesFeed = async (
         .map((item) => ({
           race: item.race,
           championship: item.championship,
+          timestamp: item.timestamp,
         }));
       if (upcoming.length > 0) {
         console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
@@ -344,6 +346,7 @@ export const fetchUpcomingRacesFeed = async (
         .map((item) => ({
           race: item.race,
           championship: item.championship,
+          timestamp: item.timestamp,
         }));
       console.log("[cms:races] result", { source: "past", count: past.length });
       const result: FetchUpcomingRacesFeedResult = { ok: true, data: past, source: "past" };
