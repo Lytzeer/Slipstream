@@ -4,26 +4,63 @@ import {
   InfoCard,
   UpcomingRaceCard,
 } from "@/components/ui";
-import { championshipsList as championshipsRaw } from "@/constants/mock-data";
+import { colors as paletteColors } from "@/constants/theme";
+import {
+  type ChampionshipRaceFeedItem,
+} from "@/lib/api/cms/controllers/championship.controller";
+import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
+import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
+import { useUpcomingRacesFeed } from "@/hooks/use-upcoming-races-feed";
 import { useTheme } from "@/contexts/theme-context";
 import { ImageBackground } from "expo-image";
 import { ChevronRight, Clock } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const {
+    championships: championshipsRaw,
+    error: championshipsError,
+    isLoading: championshipsLoading,
+  } = useChampionshipsCatalog();
   const [selectedChampionship, setSelectedChampionship] = useState<
     string | null
   >("ELMS");
 
   const championshipsList = championshipsRaw.map((c) => ({
     id: c.id,
-    name: t(c.nameKey),
+    name: getChampionshipDisplayName(c, t),
     color: c.color,
   }));
+
+  const selectedChampionshipItem = useMemo(
+    () => championshipsRaw.find((champ) => champ.id === selectedChampionship) ?? null,
+    [championshipsRaw, selectedChampionship]
+  );
+  const {
+    races: upcomingRaces,
+    source: upcomingRacesSource,
+    error: upcomingRacesError,
+    isLoading: upcomingRacesLoading,
+  } = useUpcomingRacesFeed(i18n.language);
+
+  const selectedChampionshipRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
+    if (!selectedChampionshipItem) return upcomingRaces;
+    return upcomingRaces.filter((item) => item.championship.id === selectedChampionshipItem.id);
+  }, [upcomingRaces, selectedChampionshipItem]);
+
+  useEffect(() => {
+    if (championshipsError || championshipsRaw.length === 0) return;
+    if (
+      !selectedChampionship ||
+      !championshipsRaw.some((c) => c.id === selectedChampionship)
+    ) {
+      setSelectedChampionship(championshipsRaw[0].id);
+    }
+  }, [championshipsRaw, championshipsError, selectedChampionship]);
 
   return (
     <ScrollView
@@ -35,11 +72,6 @@ export default function HomeScreen() {
           {t("common.appName")}
         </Text>
       </View>
-      <ChampionshipSelector
-        championships={championshipsList}
-        selectedChampionship={selectedChampionship}
-        onChampionshipChange={setSelectedChampionship}
-      />
       <View id="featuredContentSection">
         <View style={styles.featuredHeaderContent}>
           <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
@@ -87,24 +119,64 @@ export default function HomeScreen() {
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
         <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
-          {t("home.upcomingRaces")}
+          {upcomingRacesSource === "past" ? "Courses passees" : t("home.upcomingRaces")}
         </Text>
-        <UpcomingRaceCard
-          championship={{ id: "ELMS", name: t("championships.ELMS"), color: "#FF3B31" }}
-          race={{
-            name: t("home.race1Name"),
-            date: t("home.race1Date"),
-            circuit: t("home.race1Circuit"),
-          }}
-        />
-        <UpcomingRaceCard
-          championship={{ id: "ELMS", name: t("championships.ELMS"), color: "#FF3B31" }}
-          race={{
-            name: t("home.race2Name"),
-            date: t("home.race2Date"),
-            circuit: t("home.race2Circuit"),
-          }}
-        />
+        {championshipsLoading ? (
+          <View style={styles.championshipsLoading}>
+            <ActivityIndicator color={colors.primary} />
+          </View>
+        ) : championshipsError ? (
+          <Text style={[styles.championshipsApiError, { color: paletteColors.error }]}>
+            {t(championshipsError)}
+          </Text>
+        ) : (
+          <>
+            <View style={styles.championshipsFilterWrap}>
+              <ChampionshipSelector
+                championships={championshipsList}
+                selectedChampionship={selectedChampionship}
+                onChampionshipChange={setSelectedChampionship}
+              />
+            </View>
+            {upcomingRacesLoading ? (
+              <View style={styles.championshipsLoading}>
+                <ActivityIndicator color={colors.primary} />
+              </View>
+            ) : upcomingRacesError ? (
+              <Text style={[styles.championshipsApiError, { color: paletteColors.error }]}>
+                {t(upcomingRacesError)}
+              </Text>
+            ) : upcomingRaces.length === 0 || !selectedChampionshipItem ? (
+              <Text style={[styles.championshipsApiError, { color: colors.textMuted }]}>
+                Aucune course disponible
+              </Text>
+            ) : (
+              <View style={styles.racesSlidesContainer}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.racesSlideRow}
+                >
+                  {selectedChampionshipRaces.map((race) => (
+                    <View
+                      key={`${race.championship.id}-${race.race.name}-${race.race.date}`}
+                      style={styles.racesSlideCard}
+                    >
+                      <UpcomingRaceCard
+                        championship={{
+                          id: race.championship.id,
+                          name: getChampionshipDisplayName(race.championship, t),
+                          color: race.championship.color,
+                        }}
+                        race={race.race}
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -166,5 +238,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     opacity: 0.8,
+  },
+  championshipsLoading: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  championshipsApiError: {
+    fontSize: 15,
+    fontWeight: "500",
+    paddingVertical: 16,
+  },
+  championshipsFilterWrap: {
+    marginTop: 12,
+  },
+  racesSlidesContainer: {
+    marginTop: 12,
+    gap: 12,
+  },
+  racesSlideRow: {
+    gap: 12,
+    paddingRight: 8,
+  },
+  racesSlideCard: {
+    width: 320,
   },
 });

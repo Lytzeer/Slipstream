@@ -8,7 +8,7 @@ import { AuthFormLayout, ScreenHeader } from "@/components/layout";
 import { AuthLink, GoogleSignInButton } from "@/components/auth";
 import { Button, DividerWithText, InputSection } from "@/components/ui";
 import { useNotifications } from "@/contexts/notifications-context";
-import { authController } from "@/lib/controllers/auth.controller";
+import { authController } from "@/lib/database/controllers/auth.controller";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Lock, Mail, UserRound } from "lucide-react-native";

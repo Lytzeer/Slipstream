@@ -1,15 +1,17 @@
 "use client";
 
-import { LANGUAGES, type Locale } from "@/constants/locales";
-import { useLanguage } from "@/contexts/language-context";
+import { ChampionshipToggleRow } from "@/components/ui/championship";
 import { useTheme } from "@/contexts/theme-context";
+import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
+import type { ChampionshipRaw } from "@/types";
 import { useTranslation } from "react-i18next";
-import { Check, Globe, X } from "lucide-react-native";
+import { X } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,33 +21,49 @@ import {
 type Props = {
   visible: boolean;
   onClose: () => void;
+  championships: ChampionshipRaw[];
+  followedChampionships: Record<string, boolean>;
+  onApply: (next: Record<string, boolean>) => void;
 };
 
-export const LanguageModal = ({ visible, onClose }: Props) => {
-  const { locale, setLocale } = useLanguage();
+export const ChampionshipsModal = ({
+  visible,
+  onClose,
+  championships,
+  followedChampionships,
+  onApply,
+}: Props) => {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
-  const [selectedLocale, setSelectedLocale] = useState<Locale>(locale);
+  const [draft, setDraft] = useState<Record<string, boolean>>(followedChampionships);
   const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
-    if (visible) setSelectedLocale(locale);
-  }, [visible, locale]);
+    if (!visible) return;
+    setDraft((prev) => {
+      const next: Record<string, boolean> = { ...followedChampionships };
+      for (const c of championships) {
+        if (next[c.id] === undefined) next[c.id] = prev[c.id] ?? false;
+      }
+      return next;
+    });
+  }, [visible, followedChampionships, championships]);
 
-  const handleSelect = (code: Locale) => {
-    setSelectedLocale(code);
+  const toggle = (id: string) => {
+    setDraft((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleApply = async () => {
-    if (selectedLocale === locale) {
+    const unchanged = championships.every(
+      (c) => (draft[c.id] ?? false) === (followedChampionships[c.id] ?? false)
+    );
+    if (unchanged) {
       onClose();
       return;
     }
     setIsApplying(true);
     try {
-      await setLocale(selectedLocale);
-      onClose();
-    } catch {
+      onApply({ ...draft });
       onClose();
     } finally {
       setIsApplying(false);
@@ -60,11 +78,13 @@ export const LanguageModal = ({ visible, onClose }: Props) => {
       onRequestClose={onClose}
     >
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={[styles.modal, { backgroundColor: colors.surface }]} onPress={(e) => e.stopPropagation()}>
+        <Pressable
+          style={[styles.modal, { backgroundColor: colors.surface }]}
+          onPress={(e) => e.stopPropagation()}
+        >
           <View style={[styles.header, { backgroundColor: colors.surfaceAlt }]}>
-            <Globe size={22} color={colors.text} />
             <Text style={[styles.headerTitle, { color: colors.text }]}>
-              {t("language.chooseLanguage")}
+              {t("profile.followedChampionships")}
             </Text>
             <TouchableOpacity
               onPress={onClose}
@@ -82,42 +102,26 @@ export const LanguageModal = ({ visible, onClose }: Props) => {
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.body, { backgroundColor: colors.surface }]}>
-            {LANGUAGES.map((lang) => {
-              const isSelected = selectedLocale === lang.code;
-              return (
-                <TouchableOpacity
-                  key={lang.code}
-                  style={[
-                    styles.langRow,
-                    {
-                      backgroundColor: isSelected
-                        ? "rgba(255,59,49,0.12)"
-                        : colors.surfaceAlt,
-                      borderColor: isSelected ? colors.primary : "transparent",
-                    },
-                    isSelected && styles.langRowSelected,
-                  ]}
-                  onPress={() => handleSelect(lang.code)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.flag}>{lang.flag}</Text>
-                  <Text style={[styles.langLabel, { color: colors.text }]}>
-                    {lang.label}
-                  </Text>
-                  {isSelected && (
-                    <View style={[styles.checkWrapper, { backgroundColor: colors.primary }]}>
-                      <Check size={14} color="#fff" strokeWidth={3} />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <ScrollView
+            style={[styles.body, { backgroundColor: colors.surface }]}
+            contentContainerStyle={styles.bodyContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            {championships.map((champ, index) => (
+              <ChampionshipToggleRow
+                key={champ.id}
+                name={getChampionshipDisplayName(champ, t)}
+                color={champ.color}
+                value={draft[champ.id] ?? false}
+                onValueChange={() => toggle(champ.id)}
+                isLast={index === championships.length - 1}
+              />
+            ))}
+          </ScrollView>
 
           <View style={[styles.footerArea, { borderTopColor: colors.border }]}>
             <Text style={[styles.footerText, { color: colors.textMuted }]}>
-              {t("language.applyToApp")}
+              {t("profile.followedChampionshipsHint")}
             </Text>
             <TouchableOpacity
               style={[styles.applyBtn, { backgroundColor: colors.primary }]}
@@ -149,6 +153,7 @@ const styles = StyleSheet.create({
   modal: {
     width: "100%",
     maxWidth: 340,
+    maxHeight: "85%",
     borderRadius: 16,
     overflow: "hidden",
     shadowColor: "#000",
@@ -172,40 +177,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
     justifyContent: "center",
   },
   body: {
-    padding: 12,
-    gap: 8,
+    maxHeight: 320,
   },
-  langRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 14,
-    borderRadius: 10,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "transparent",
-  },
-  langRowSelected: {
-    borderWidth: 1.5,
-  },
-  flag: {
-    fontSize: 24,
-  },
-  langLabel: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  checkWrapper: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: "center",
-    justifyContent: "center",
+  bodyContent: {
+    paddingVertical: 4,
   },
   footerArea: {
     padding: 16,
