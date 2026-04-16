@@ -12,17 +12,21 @@ export const useUpcomingRacesFeed = (locale: string) => {
     staleTime: 90_000,
   });
 
-  const races = useMemo<ChampionshipRaceFeedItem[]>(() => {
+  const upcomingRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
     if (!query.data?.ok) return [];
-    return query.data.data;
+    return query.data.upcoming;
   }, [query.data]);
 
-  const source = query.data && query.data.ok ? query.data.source : "upcoming";
+  const pastRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
+    if (!query.data?.ok) return [];
+    return query.data.past;
+  }, [query.data]);
+
   const error = query.data && !query.data.ok ? query.data.error : null;
 
   return {
-    races,
-    source,
+    upcomingRaces,
+    pastRaces,
     error,
     isLoading: query.isLoading || query.isFetching,
     refetch: () => query.refetch(),

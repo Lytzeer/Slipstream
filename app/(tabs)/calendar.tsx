@@ -18,24 +18,28 @@ export default function CalendarScreen() {
   const { t, i18n } = useTranslation();
   const [selectedChampionship, setSelectedChampionship] = useState<string>("all");
 
-  const { races, source, isLoading } = useUpcomingRacesFeed(i18n.language);
+  const { upcomingRaces, pastRaces, isLoading } = useUpcomingRacesFeed(i18n.language);
   const { addRaceToCalendar } = useAddRaceToCalendar();
 
   const championships = useMemo(() => {
     const seen = new Set<string>();
     const list: Championship[] = [{ id: "all", name: t("common.all"), color: colors.primary }];
-    for (const item of races) {
+    for (const item of [...upcomingRaces, ...pastRaces]) {
       if (!seen.has(item.championship.id)) {
         seen.add(item.championship.id);
         list.push(toChampionship(item.championship));
       }
     }
     return list;
-  }, [races, t, colors.primary]);
+  }, [upcomingRaces, pastRaces, t, colors.primary]);
 
-  const filtered = selectedChampionship === "all"
-    ? races
-    : races.filter((item) => item.championship.id === selectedChampionship);
+  const filteredUpcoming = selectedChampionship === "all"
+    ? upcomingRaces
+    : upcomingRaces.filter((item) => item.championship.id === selectedChampionship);
+
+  const filteredPast = selectedChampionship === "all"
+    ? pastRaces
+    : pastRaces.filter((item) => item.championship.id === selectedChampionship);
 
   return (
     <ScrollView
@@ -56,28 +60,19 @@ export default function CalendarScreen() {
       {isLoading ? (
         <ActivityIndicator style={styles.loader} color={colors.primary} />
       ) : (
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              {source === "past" ? t("calendar.completedRaces") : t("calendar.upcomingRaces")}
-            </Text>
-            <Text style={[styles.sectionCount, { color: colors.textMuted }]}>
-              {t("calendar.racesCount", { count: filtered.length })}
-            </Text>
-          </View>
-          <View style={styles.list}>
-            {source === "past"
-              ? filtered.map((item, index) => (
-                  <CompletedRaceCard
-                    key={`${item.championship.id}-${item.race.circuit}-${index}`}
-                    index={index}
-                    name={item.race.name}
-                    championship={toChampionship(item.championship)}
-                    circuit={item.race.circuit}
-                    completedLabel={t("calendar.completed")}
-                  />
-                ))
-              : filtered.map((item, index) => (
+        <>
+          {filteredUpcoming.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  {t("calendar.upcomingRaces")}
+                </Text>
+                <Text style={[styles.sectionCount, { color: colors.textMuted }]}>
+                  {t("calendar.racesCount", { count: filteredUpcoming.length })}
+                </Text>
+              </View>
+              <View style={styles.list}>
+                {filteredUpcoming.map((item, index) => (
                   <CalendarRaceCard
                     key={`${item.championship.id}-${item.race.circuit}-${index}`}
                     index={index}
@@ -90,8 +85,34 @@ export default function CalendarScreen() {
                     onAdd={() => addRaceToCalendar(item)}
                   />
                 ))}
-          </View>
-        </View>
+              </View>
+            </View>
+          )}
+          {filteredPast.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                  {t("calendar.completedRaces")}
+                </Text>
+                <Text style={[styles.sectionCount, { color: colors.textMuted }]}>
+                  {t("calendar.racesCount", { count: filteredPast.length })}
+                </Text>
+              </View>
+              <View style={styles.list}>
+                {filteredPast.map((item, index) => (
+                  <CompletedRaceCard
+                    key={`${item.championship.id}-${item.race.circuit}-${index}`}
+                    index={index}
+                    name={item.race.name}
+                    championship={toChampionship(item.championship)}
+                    circuit={item.race.circuit}
+                    completedLabel={t("calendar.completed")}
+                  />
+                ))}
+              </View>
+            </View>
+          )}
+        </>
       )}
     </ScrollView>
   );

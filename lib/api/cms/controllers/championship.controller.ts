@@ -184,7 +184,7 @@ type FetchUpcomingRacesResult =
   | { ok: false; error: string };
 
 export type FetchUpcomingRacesFeedResult =
-  | { ok: true; data: ChampionshipRaceFeedItem[]; source: "upcoming" | "past" }
+  | { ok: true; upcoming: ChampionshipRaceFeedItem[]; past: ChampionshipRaceFeedItem[] }
   | { ok: false; error: string };
 
 const asNonEmpty = (value: unknown): string | null => {
@@ -249,11 +249,13 @@ export const fetchUpcomingRacesByChampionship = async (
   const feed = await fetchUpcomingRacesFeed(locale);
   if (!feed.ok) return feed;
 
-  const selected = feed.data.filter((item) => item.championship.linkValue === normalized);
-  const others = feed.data.filter((item) => item.championship.linkValue !== normalized);
+  const all = [...feed.upcoming, ...feed.past];
+  const selected = all.filter((item) => item.championship.linkValue === normalized);
+  const others = all.filter((item) => item.championship.linkValue !== normalized);
+  const source = feed.upcoming.length > 0 ? "upcoming" : "past";
   return {
     ok: true,
-    source: feed.source,
+    source,
     data: [...selected, ...others],
   };
 };
@@ -334,17 +336,6 @@ export const fetchUpcomingRacesFeed = async (
           startTimestamp: item.startTimestamp,
           endTimestamp: item.endTimestamp,
         }));
-      if (upcoming.length > 0) {
-        console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
-        const result: FetchUpcomingRacesFeedResult = {
-          ok: true,
-          data: upcoming,
-          source: "upcoming",
-        };
-        setCached(upcomingRacesFeedCache, feedCacheKey, result);
-        return result;
-      }
-
       const past = mapped
         .filter((item) => item.startTimestamp < now)
         .sort((a, b) => b.startTimestamp - a.startTimestamp)
@@ -354,8 +345,8 @@ export const fetchUpcomingRacesFeed = async (
           startTimestamp: item.startTimestamp,
           endTimestamp: item.endTimestamp,
         }));
-      console.log("[cms:races] result", { source: "past", count: past.length });
-      const result: FetchUpcomingRacesFeedResult = { ok: true, data: past, source: "past" };
+      console.log("[cms:races] result", { upcoming: upcoming.length, past: past.length });
+      const result: FetchUpcomingRacesFeedResult = { ok: true, upcoming, past };
       setCached(upcomingRacesFeedCache, feedCacheKey, result);
       return result;
     } catch (error) {
