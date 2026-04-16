@@ -144,9 +144,32 @@
     "permissionRequired": "Permission requise",
     "permissionDenied": "Autorisez l'accès au calendrier dans les réglages"
   },
+  "news": {
+    "title": "Actualités",
+    "searchPlaceholder": "Rechercher un article...",
+    "filters": "Filtres",
+    "noResults": "Aucun article trouvé",
+    "categoryAnalysis": "Analyse",
+    "categoryResult": "Résultat",
+    "categoryPreview": "Aperçu",
+    "categoryInterview": "Interview",
+    "article1Title": "Analyse technique : Les secrets de la Ferrari 499P au Castellet",
+    "article1ReadTime": "5 min de lecture",
+    "article2Title": "Résultats des 4 Heures de Portimão : victoire ELMS",
+    "article2ReadTime": "3 min de lecture",
+    "article3Title": "Aperçu : GT World Challenge Spa, les favoris 2026",
+    "article3ReadTime": "4 min de lecture",
+    "article4Title": "Interview exclusive : le champion ELMS nous parle de sa saison",
+    "article4ReadTime": "6 min de lecture",
+    "article5Title": "Le Mans Cup : analyse des nouveaux règlements techniques",
+    "article5ReadTime": "7 min de lecture",
+    "article6Title": "GT World Challenge : résultats et classement après Barcelone",
+    "article6ReadTime": "3 min de lecture"
+  },
   "tabs": {
     "home": "Home",
     "calendar": "Calendrier",
+    "news": "Actualités",
     "profile": "Profil"
   },
   "language": {

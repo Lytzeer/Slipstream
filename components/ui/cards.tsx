@@ -335,6 +335,60 @@ export function CompletedRaceCard({
   );
 }
 
+// NewsArticleCard
+type NewsArticleCardProps = {
+  title: string;
+  championship: Championship;
+  category: string;
+  date: string;
+  readTime: string;
+  index: number;
+  onPress?: () => void;
+};
+
+export function NewsArticleCard({
+  title,
+  championship,
+  category,
+  date,
+  readTime,
+  index,
+  onPress,
+}: NewsArticleCardProps) {
+  const { colors } = useTheme();
+  return (
+    <MotiView
+      from={{ opacity: 0, translateY: 20 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: "timing", duration: 300, delay: index * 50 }}
+    >
+      <Pressable
+        style={[cardStyles.newsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        onPress={onPress}
+      >
+        <View style={[cardStyles.newsImageArea, { backgroundColor: championship.color + "33" }]}>
+          <View style={[cardStyles.newsChampBadge, { backgroundColor: "rgba(0,0,0,0.6)" }]}>
+            <Text style={cardStyles.newsChampBadgeText}>{championship.name}</Text>
+          </View>
+        </View>
+        <View style={cardStyles.newsContent}>
+          <View style={cardStyles.newsMeta}>
+            <View style={[cardStyles.newsCategoryBadge, { backgroundColor: colors.surfaceAlt }]}>
+              <Text style={[cardStyles.newsCategoryText, { color: colors.textSecondary }]}>{category}</Text>
+            </View>
+            <Text style={[cardStyles.newsDate, { color: colors.textMuted }]}>{date}</Text>
+          </View>
+          <Text style={[cardStyles.newsTitle, { color: colors.text }]} numberOfLines={2}>{title}</Text>
+          <View style={cardStyles.newsReadTime}>
+            <Clock size={14} color={colors.textMuted} />
+            <Text style={[cardStyles.newsReadTimeText, { color: colors.textMuted }]}>{readTime}</Text>
+          </View>
+        </View>
+      </Pressable>
+    </MotiView>
+  );
+}
+
 const cardStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
@@ -461,5 +515,60 @@ const cardStyles = StyleSheet.create({
   },
   completedBadgeText: {
     fontSize: 11,
+  },
+  newsCard: {
+    borderRadius: 12,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  newsImageArea: {
+    aspectRatio: 16 / 9,
+    justifyContent: "flex-end",
+    padding: 12,
+  },
+  newsChampBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  newsChampBadgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  newsContent: {
+    padding: 14,
+    gap: 8,
+  },
+  newsMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  newsCategoryBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  newsCategoryText: {
+    fontSize: 11,
+    fontWeight: "500",
+  },
+  newsDate: {
+    fontSize: 12,
+  },
+  newsTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    lineHeight: 22,
+  },
+  newsReadTime: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  newsReadTimeText: {
+    fontSize: 13,
   },
 });
