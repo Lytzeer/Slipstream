@@ -67,9 +67,6 @@ const toDynamicColor = (seed: string): string => {
   return `hsl(${hue} 72% 52%)`;
 };
 
-const championshipFromCollectionSlug = (slug: string): string =>
-  normalizeLinkValue(slug.replace(/^calendrier-/, "").replace(/-eu$/, ""));
-
 export const mapChampionshipLinkValueToRaw = (raw: string): ChampionshipRaw | null => {
   const v = normalizeLinkValue(raw);
   if (!v) return null;
@@ -79,7 +76,7 @@ export const mapChampionshipLinkValueToRaw = (raw: string): ChampionshipRaw | nu
     nameKey: "",
     color: toDynamicColor(v),
     linkValue: v,
-    displayLabel: raw.trim() || toDisplayLabel(v),
+    displayLabel: toDisplayLabel(v) || raw.trim(),
   };
 };
 
