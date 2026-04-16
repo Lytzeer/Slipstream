@@ -29,8 +29,13 @@ export const useAddRaceToCalendar = () => {
       return;
     }
 
-    const startDate = item.timestamp ? new Date(item.timestamp) : new Date();
-    const endDate = new Date(startDate.getTime() + 8 * 60 * 60 * 1000); // +8h
+    const startDate = item.startTimestamp ? new Date(item.startTimestamp) : new Date();
+    startDate.setHours(0, 0, 0, 0);
+
+    const endBase = item.endTimestamp ? new Date(item.endTimestamp) : new Date(startDate);
+    endBase.setHours(0, 0, 0, 0);
+    const endDate = new Date(endBase);
+    endDate.setDate(endDate.getDate() + 1);
 
     try {
       await Calendar.createEventAsync(calendarId, {
@@ -39,6 +44,7 @@ export const useAddRaceToCalendar = () => {
         notes: item.championship.displayLabel ?? item.championship.id,
         startDate,
         endDate,
+        allDay: true,
       });
       Alert.alert(t("calendar.addSuccess"));
     } catch {

@@ -175,7 +175,8 @@ export const fetchChampionshipsCatalog =
 export type ChampionshipRaceFeedItem = {
   race: Race;
   championship: ChampionshipRaw;
-  timestamp?: number;
+  startTimestamp?: number;
+  endTimestamp?: number;
 };
 
 type FetchUpcomingRacesResult =
@@ -211,7 +212,7 @@ const toTimestamp = (rawDate: string): number | null => {
 const mapEntryToRace = (
   entry: { data: Record<string, unknown> | null },
   locale: string
-): { race: Race; timestamp: number } | null => {
+): { race: Race; startTimestamp: number; endTimestamp?: number } | null => {
   const data = entry.data ?? {};
   const name = asNonEmpty(data.title) ?? asNonEmpty(data.name);
   const circuit =
@@ -220,19 +221,21 @@ const mapEntryToRace = (
     asNonEmpty(data.location) ??
     asNonEmpty(data.track) ??
     asNonEmpty(data.venue);
-  const rawDate =
+  const rawStartDate =
     asNonEmpty(data.start_date) ??
-    asNonEmpty(data.end_date) ??
     asNonEmpty(data.date) ??
     asNonEmpty(data.raceDate) ??
     asNonEmpty(data.startDate) ??
     asNonEmpty(data.datetime);
-  if (!name || !circuit || !rawDate) return null;
-  const timestamp = toTimestamp(rawDate);
-  if (!timestamp) return null;
+  const rawEndDate = asNonEmpty(data.end_date);
+  if (!name || !circuit || !rawStartDate) return null;
+  const startTimestamp = toTimestamp(rawStartDate);
+  if (!startTimestamp) return null;
+  const endTimestamp = rawEndDate ? (toTimestamp(rawEndDate) ?? undefined) : undefined;
   return {
-    race: { name, circuit, date: formatRaceDate(rawDate, locale) },
-    timestamp,
+    race: { name, circuit, date: formatRaceDate(rawStartDate, locale) },
+    startTimestamp,
+    endTimestamp,
   };
 };
 
@@ -311,7 +314,8 @@ export const fetchUpcomingRacesFeed = async (
             race
           ): race is {
             race: Race;
-            timestamp: number;
+            startTimestamp: number;
+            endTimestamp?: number;
             championship: ChampionshipRaw;
           } => race !== null
         );
@@ -322,12 +326,13 @@ export const fetchUpcomingRacesFeed = async (
 
       const now = Date.now();
       const upcoming = mapped
-        .filter((item) => item.timestamp >= now)
-        .sort((a, b) => a.timestamp - b.timestamp)
+        .filter((item) => item.startTimestamp >= now)
+        .sort((a, b) => a.startTimestamp - b.startTimestamp)
         .map((item) => ({
           race: item.race,
           championship: item.championship,
-          timestamp: item.timestamp,
+          startTimestamp: item.startTimestamp,
+          endTimestamp: item.endTimestamp,
         }));
       if (upcoming.length > 0) {
         console.log("[cms:races] result", { source: "upcoming", count: upcoming.length });
@@ -341,12 +346,13 @@ export const fetchUpcomingRacesFeed = async (
       }
 
       const past = mapped
-        .filter((item) => item.timestamp < now)
-        .sort((a, b) => b.timestamp - a.timestamp)
+        .filter((item) => item.startTimestamp < now)
+        .sort((a, b) => b.startTimestamp - a.startTimestamp)
         .map((item) => ({
           race: item.race,
           championship: item.championship,
-          timestamp: item.timestamp,
+          startTimestamp: item.startTimestamp,
+          endTimestamp: item.endTimestamp,
         }));
       console.log("[cms:races] result", { source: "past", count: past.length });
       const result: FetchUpcomingRacesFeedResult = { ok: true, data: past, source: "past" };
