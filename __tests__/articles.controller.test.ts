@@ -155,4 +155,49 @@ describe("fetchArticlesFeed", () => {
     if (!result.ok) return;
     expect(result.data[0]?.championship).toBeUndefined();
   });
+
+  it("sets featured:true when data.featured is boolean true", async () => {
+    process.env.EXPO_PUBLIC_CMS_BASE_URL = "https://cms.example.com";
+    mockFetchWith([makeEntry({ featured: true })]);
+    const result = await fetchArticlesFeed("fr");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data[0]?.featured).toBe(true);
+  });
+
+  it("sets featured:true when data.featured is string 'true'", async () => {
+    process.env.EXPO_PUBLIC_CMS_BASE_URL = "https://cms.example.com";
+    mockFetchWith([makeEntry({ featured: "true" })]);
+    const result = await fetchArticlesFeed("fr");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data[0]?.featured).toBe(true);
+  });
+
+  it("sets featured:true when data.featured is 1", async () => {
+    process.env.EXPO_PUBLIC_CMS_BASE_URL = "https://cms.example.com";
+    mockFetchWith([makeEntry({ featured: 1 })]);
+    const result = await fetchArticlesFeed("fr");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data[0]?.featured).toBe(true);
+  });
+
+  it("leaves featured undefined when missing", async () => {
+    process.env.EXPO_PUBLIC_CMS_BASE_URL = "https://cms.example.com";
+    mockFetchWith([makeEntry({ featured: undefined })]);
+    const result = await fetchArticlesFeed("fr");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data[0]?.featured).toBeUndefined();
+  });
+
+  it("leaves featured undefined when data.featured is false", async () => {
+    process.env.EXPO_PUBLIC_CMS_BASE_URL = "https://cms.example.com";
+    mockFetchWith([makeEntry({ featured: false })]);
+    const result = await fetchArticlesFeed("fr");
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data[0]?.featured).toBeUndefined();
+  });
 });
