@@ -44,6 +44,7 @@ export type CmsArticleItem = {
   publishedTimestamp: number; // ms epoch for sorting
   readTimeMinutes: number;    // computed from body word count
   bodyHtml?: string;
+  featured?: boolean;
 };
 
 export type FetchArticlesFeedResult =
@@ -154,6 +155,11 @@ const mapEntryToArticle = (
     asNonEmpty(data.bodyHtml) ??
     undefined;
 
+  const featured =
+    data.featured === true || data.featured === "true" || data.featured === 1
+      ? true
+      : undefined;
+
   return {
     id: entry.id,
     slug: asNonEmpty(entry.slug) ?? undefined,
@@ -166,6 +172,7 @@ const mapEntryToArticle = (
     publishedTimestamp,
     readTimeMinutes,
     bodyHtml,
+    featured,
   };
 };
 
