@@ -45,6 +45,10 @@ export default function RootLayout() {
                     name="advanced-settings"
                     options={{ animation: "slide_from_right" }}
                   />
+                  <Stack.Screen
+                    name="article/[id]"
+                    options={{ animation: "slide_from_right" }}
+                  />
                 </Stack>
                 <StatusBarTheme />
               </NotificationsProvider>

@@ -4,6 +4,7 @@ import { useArticleCategories } from "@/hooks/use-article-categories";
 import { useArticlesFeed } from "@/hooks/use-articles-feed";
 import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
 import type { ChampionshipRaw } from "@/types";
+import { router } from "expo-router";
 import { Search, SlidersHorizontal } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -128,6 +129,7 @@ export default function NewsScreen() {
               date={item.publishedAt}
               readTime={t("news.readTime", { count: item.readTimeMinutes })}
               imageUrl={item.imageUrl}
+              onPress={() => router.push(`/article/${item.id}`)}
             />
           )}
         />
@@ -168,7 +170,7 @@ const styles = StyleSheet.create({
   },
   filtersLabelText: { fontSize: 13 },
   categorySpacer: { height: 8 },
-  list: { padding: 16, gap: 12 },
+  list: { padding: 16, paddingBottom: 96, gap: 12 },
   empty: { flex: 1, alignItems: "center", paddingTop: 60 },
   emptyText: { fontSize: 15 },
   loader: { marginTop: 60 },

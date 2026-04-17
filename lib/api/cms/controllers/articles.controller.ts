@@ -43,6 +43,7 @@ export type CmsArticleItem = {
   publishedAt: string;        // formatted display date
   publishedTimestamp: number; // ms epoch for sorting
   readTimeMinutes: number;    // computed from body word count
+  bodyHtml?: string;
 };
 
 export type FetchArticlesFeedResult =
@@ -148,6 +149,11 @@ const mapEntryToArticle = (
     ? mapChampionshipLinkValueToRaw(rawChampionship) ?? undefined
     : undefined;
 
+  const bodyHtml =
+    asNonEmpty(data.body_html) ??
+    asNonEmpty(data.bodyHtml) ??
+    undefined;
+
   return {
     id: entry.id,
     slug: asNonEmpty(entry.slug) ?? undefined,
@@ -159,6 +165,7 @@ const mapEntryToArticle = (
     publishedAt: formatArticleDate(rawDate, locale),
     publishedTimestamp,
     readTimeMinutes,
+    bodyHtml,
   };
 };
 
