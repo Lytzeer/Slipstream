@@ -153,18 +153,9 @@
     "categoryResult": "Risultato",
     "categoryPreview": "Anteprima",
     "categoryInterview": "Intervista",
-    "article1Title": "Analisi tecnica: I segreti della Ferrari 499P a Castellet",
-    "article1ReadTime": "5 min di lettura",
-    "article2Title": "Risultati 4 Ore di Portimão: vittoria ELMS",
-    "article2ReadTime": "3 min di lettura",
-    "article3Title": "Anteprima: GT World Challenge Spa, i favoriti 2026",
-    "article3ReadTime": "4 min di lettura",
-    "article4Title": "Intervista esclusiva: il campione ELMS parla della sua stagione",
-    "article4ReadTime": "6 min di lettura",
-    "article5Title": "Le Mans Cup: analisi dei nuovi regolamenti tecnici",
-    "article5ReadTime": "7 min di lettura",
-    "article6Title": "GT World Challenge: risultati e classifica dopo Barcellona",
-    "article6ReadTime": "3 min di lettura"
+    "loading": "Caricamento...",
+    "error": "Impossibile caricare gli articoli",
+    "readTime": "{{count}} min di lettura"
   },
   "tabs": {
     "home": "Home",

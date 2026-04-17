@@ -9,14 +9,16 @@ import {
   type ChampionshipRaceFeedItem,
 } from "@/lib/api/cms/controllers/championship.controller";
 import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
+import { useArticlesFeed } from "@/hooks/use-articles-feed";
 import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
 import { useUpcomingRacesFeed } from "@/hooks/use-upcoming-races-feed";
 import { useTheme } from "@/contexts/theme-context";
 import { ImageBackground } from "expo-image";
+import { router } from "expo-router";
 import { ChevronRight, Clock } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -45,6 +47,10 @@ export default function HomeScreen() {
     error: upcomingRacesError,
     isLoading: upcomingRacesLoading,
   } = useUpcomingRacesFeed(i18n.language);
+
+  const { articles, isLoading: articlesLoading } = useArticlesFeed(i18n.language);
+  const featuredArticle = useMemo(() => articles.find((a) => a.featured), [articles]);
+  const latestArticles = useMemo(() => articles.slice(0, 2), [articles]);
 
   const selectedChampionshipRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
     if (!selectedChampionshipItem) return upcomingRaces;
@@ -81,40 +87,52 @@ export default function HomeScreen() {
             <ChevronRight color="#FF3B31" size={20} />
           </View>
         </View>
-        <ImageBackground
-          source={require("../../assets/images/featured.png")}
-          style={styles.featuredImage}
-        >
-          <ChampionshipBadge
-            champ={{ id: "ELMS", name: t("championships.ELMS"), color: "#FF3B31" }}
-          />
-          <Text style={styles.featuredImageText}>
-            {t("home.featuredArticle")}
-          </Text>
-          <View style={styles.featuredImageSubTextContainer}>
-            <Clock color="white" size={14} />
-            <Text style={styles.featuredImageSubText}>
-              {t("home.readTime", { count: 8 })}
-            </Text>
+        {articlesLoading ? (
+          <View style={[styles.featuredImage, { backgroundColor: colors.surfaceAlt, justifyContent: "center", alignItems: "center" }]}>
+            <ActivityIndicator color={colors.primary} />
           </View>
-        </ImageBackground>
+        ) : featuredArticle ? (
+          <Pressable onPress={() => router.push(`/article/${featuredArticle.id}`)}>
+            <ImageBackground
+              source={featuredArticle.imageUrl ? { uri: featuredArticle.imageUrl } : require("../../assets/images/featured.png")}
+              style={styles.featuredImage}
+            >
+              <View style={styles.featuredOverlay}>
+                {featuredArticle.championship && (
+                  <ChampionshipBadge
+                    champ={{
+                      id: featuredArticle.championship.id,
+                      name: featuredArticle.championship.displayLabel ?? featuredArticle.championship.nameKey,
+                      color: featuredArticle.championship.color,
+                    }}
+                  />
+                )}
+                <Text style={styles.featuredImageText}>{featuredArticle.title}</Text>
+                <View style={styles.featuredImageSubTextContainer}>
+                  <Clock color="white" size={14} />
+                  <Text style={styles.featuredImageSubText}>
+                    {t("home.readTime", { count: featuredArticle.readTimeMinutes })}
+                  </Text>
+                </View>
+              </View>
+            </ImageBackground>
+          </Pressable>
+        ) : null}
       </View>
       <View id="lastActivitySection" style={{ marginTop: 40 }}>
         <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
           {t("home.lastNews")}
         </Text>
-        <InfoCard
-          image={require("@/assets/images/info/info1.png")}
-          category={t("home.article1Category")}
-          title={t("home.article1Title")}
-          readTime="12 min"
-        />
-        <InfoCard
-          image={require("@/assets/images/info/info1.png")}
-          category={t("home.article2Category")}
-          title={t("home.article2Title")}
-          readTime="6 min"
-        />
+        {latestArticles.map((article) => (
+          <InfoCard
+            key={article.id}
+            image={article.imageUrl ?? ""}
+            category={article.category ?? ""}
+            title={article.title}
+            readTime={t("home.readTime", { count: article.readTimeMinutes })}
+            onPress={() => router.push(`/article/${article.id}`)}
+          />
+        ))}
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
         <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
@@ -215,12 +233,19 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 225,
     marginTop: 20,
-    display: "flex",
-    justifyContent: "flex-end",
-    padding: 20,
     borderRadius: 16,
     overflow: "hidden",
+  },
+  featuredOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    padding: 20,
     gap: 8,
+    justifyContent: "flex-end",
   },
   featuredImageText: {
     color: "white",

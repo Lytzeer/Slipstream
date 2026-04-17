@@ -1,6 +1,6 @@
 import { useTheme } from "@/contexts/theme-context";
 import type { Championship, Race } from "@/types";
-import { Image } from "expo-image";
+import { Image, ImageBackground } from "expo-image";
 import {
   Bookmark,
   CalendarDays,
@@ -343,6 +343,7 @@ type NewsArticleCardProps = {
   date: string;
   readTime: string;
   index: number;
+  imageUrl?: string;
   onPress?: () => void;
 };
 
@@ -353,6 +354,7 @@ export function NewsArticleCard({
   date,
   readTime,
   index,
+  imageUrl,
   onPress,
 }: NewsArticleCardProps) {
   const { colors } = useTheme();
@@ -366,11 +368,23 @@ export function NewsArticleCard({
         style={[cardStyles.newsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={onPress}
       >
-        <View style={[cardStyles.newsImageArea, { backgroundColor: championship.color + "33" }]}>
-          <View style={[cardStyles.newsChampBadge, { backgroundColor: "rgba(0,0,0,0.6)" }]}>
-            <Text style={cardStyles.newsChampBadgeText}>{championship.name}</Text>
+        {imageUrl ? (
+          <ImageBackground
+            source={{ uri: imageUrl }}
+            style={cardStyles.newsImageArea}
+            contentFit="cover"
+          >
+            <View style={[cardStyles.newsChampBadge, { backgroundColor: "rgba(0,0,0,0.6)" }]}>
+              <Text style={cardStyles.newsChampBadgeText}>{championship.name}</Text>
+            </View>
+          </ImageBackground>
+        ) : (
+          <View style={[cardStyles.newsImageArea, { backgroundColor: championship.color + "33" }]}>
+            <View style={[cardStyles.newsChampBadge, { backgroundColor: "rgba(0,0,0,0.6)" }]}>
+              <Text style={cardStyles.newsChampBadgeText}>{championship.name}</Text>
+            </View>
           </View>
-        </View>
+        )}
         <View style={cardStyles.newsContent}>
           <View style={cardStyles.newsMeta}>
             <View style={[cardStyles.newsCategoryBadge, { backgroundColor: colors.surfaceAlt }]}>
