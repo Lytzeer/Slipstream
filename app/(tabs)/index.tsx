@@ -5,20 +5,26 @@ import {
   UpcomingRaceCard,
 } from "@/components/ui";
 import { colors as paletteColors } from "@/constants/theme";
-import {
-  type ChampionshipRaceFeedItem,
-} from "@/lib/api/cms/controllers/championship.controller";
-import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
+import { useTheme } from "@/contexts/theme-context";
 import { useArticlesFeed } from "@/hooks/use-articles-feed";
 import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
 import { useUpcomingRacesFeed } from "@/hooks/use-upcoming-races-feed";
-import { useTheme } from "@/contexts/theme-context";
+import { type ChampionshipRaceFeedItem } from "@/lib/api/cms/controllers/championship.controller";
+import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
 import { ChevronRight, Clock } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -39,8 +45,10 @@ export default function HomeScreen() {
   }));
 
   const selectedChampionshipItem = useMemo(
-    () => championshipsRaw.find((champ) => champ.id === selectedChampionship) ?? null,
-    [championshipsRaw, selectedChampionship]
+    () =>
+      championshipsRaw.find((champ) => champ.id === selectedChampionship) ??
+      null,
+    [championshipsRaw, selectedChampionship],
   );
   const {
     upcomingRaces,
@@ -48,13 +56,20 @@ export default function HomeScreen() {
     isLoading: upcomingRacesLoading,
   } = useUpcomingRacesFeed(i18n.language);
 
-  const { articles, isLoading: articlesLoading } = useArticlesFeed(i18n.language);
-  const featuredArticle = useMemo(() => articles.find((a) => a.featured), [articles]);
+  const { articles, isLoading: articlesLoading } = useArticlesFeed(
+    i18n.language,
+  );
+  const featuredArticle = useMemo(
+    () => articles.find((a) => a.featured),
+    [articles],
+  );
   const latestArticles = useMemo(() => articles.slice(0, 2), [articles]);
 
   const selectedChampionshipRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
     if (!selectedChampionshipItem) return upcomingRaces;
-    return upcomingRaces.filter((item) => item.championship.id === selectedChampionshipItem.id);
+    return upcomingRaces.filter(
+      (item) => item.championship.id === selectedChampionshipItem.id,
+    );
   }, [upcomingRaces, selectedChampionshipItem]);
 
   useEffect(() => {
@@ -72,10 +87,12 @@ export default function HomeScreen() {
       style={[styles.containerBox, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.scrollView}
     >
-      <View id="titleSection">
-        <Text style={[styles.title, { color: colors.text }]}>
-          {t("common.appName")}
-        </Text>
+      <View id="titleSection" style={styles.titleSection}>
+        <Image
+          source={require("@/assets/images/02-horizontal-bold-black.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
       <View id="featuredContentSection">
         <View style={styles.featuredHeaderContent}>
@@ -88,13 +105,28 @@ export default function HomeScreen() {
           </View>
         </View>
         {articlesLoading ? (
-          <View style={[styles.featuredImage, { backgroundColor: colors.surfaceAlt, justifyContent: "center", alignItems: "center" }]}>
+          <View
+            style={[
+              styles.featuredImage,
+              {
+                backgroundColor: colors.surfaceAlt,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
             <ActivityIndicator color={colors.primary} />
           </View>
         ) : featuredArticle ? (
-          <Pressable onPress={() => router.push(`/article/${featuredArticle.id}`)}>
+          <Pressable
+            onPress={() => router.push(`/article/${featuredArticle.id}`)}
+          >
             <ImageBackground
-              source={featuredArticle.imageUrl ? { uri: featuredArticle.imageUrl } : require("../../assets/images/featured.png")}
+              source={
+                featuredArticle.imageUrl
+                  ? { uri: featuredArticle.imageUrl }
+                  : require("../../assets/images/featured.png")
+              }
               style={styles.featuredImage}
             >
               <View style={styles.featuredOverlay}>
@@ -102,16 +134,22 @@ export default function HomeScreen() {
                   <ChampionshipBadge
                     champ={{
                       id: featuredArticle.championship.id,
-                      name: featuredArticle.championship.displayLabel ?? featuredArticle.championship.nameKey,
+                      name:
+                        featuredArticle.championship.displayLabel ??
+                        featuredArticle.championship.nameKey,
                       color: featuredArticle.championship.color,
                     }}
                   />
                 )}
-                <Text style={styles.featuredImageText}>{featuredArticle.title}</Text>
+                <Text style={styles.featuredImageText}>
+                  {featuredArticle.title}
+                </Text>
                 <View style={styles.featuredImageSubTextContainer}>
                   <Clock color="white" size={14} />
                   <Text style={styles.featuredImageSubText}>
-                    {t("home.readTime", { count: featuredArticle.readTimeMinutes })}
+                    {t("home.readTime", {
+                      count: featuredArticle.readTimeMinutes,
+                    })}
                   </Text>
                 </View>
               </View>
@@ -143,7 +181,12 @@ export default function HomeScreen() {
             <ActivityIndicator color={colors.primary} />
           </View>
         ) : championshipsError ? (
-          <Text style={[styles.championshipsApiError, { color: paletteColors.error }]}>
+          <Text
+            style={[
+              styles.championshipsApiError,
+              { color: paletteColors.error },
+            ]}
+          >
             {t(championshipsError)}
           </Text>
         ) : (
@@ -160,11 +203,21 @@ export default function HomeScreen() {
                 <ActivityIndicator color={colors.primary} />
               </View>
             ) : upcomingRacesError ? (
-              <Text style={[styles.championshipsApiError, { color: paletteColors.error }]}>
+              <Text
+                style={[
+                  styles.championshipsApiError,
+                  { color: paletteColors.error },
+                ]}
+              >
                 {t(upcomingRacesError)}
               </Text>
             ) : upcomingRaces.length === 0 || !selectedChampionshipItem ? (
-              <Text style={[styles.championshipsApiError, { color: colors.textMuted }]}>
+              <Text
+                style={[
+                  styles.championshipsApiError,
+                  { color: colors.textMuted },
+                ]}
+              >
                 Aucune course disponible
               </Text>
             ) : (
@@ -182,7 +235,10 @@ export default function HomeScreen() {
                       <UpcomingRaceCard
                         championship={{
                           id: race.championship.id,
-                          name: getChampionshipDisplayName(race.championship, t),
+                          name: getChampionshipDisplayName(
+                            race.championship,
+                            t,
+                          ),
                           color: race.championship.color,
                         }}
                         race={race.race}
@@ -206,23 +262,26 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingVertical: 30,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    paddingVertical: 10,
+  titleSection: {
+    paddingTop: 6,
+    paddingBottom: 4,
+    alignItems: "flex-start",
+  },
+  logo: {
+    width: 280,
+    height: 75,
   },
   featuredHeaderContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 60,
+    marginTop: 30,
   },
   featuredHeaderTitle: {
     fontWeight: "600",
     fontSize: 26,
   },
   featuredSeeAll: {
-    flexDirection: "row",
     alignItems: "center",
   },
   featuredSeeAllText: {
