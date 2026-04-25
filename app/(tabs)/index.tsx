@@ -99,10 +99,13 @@ export default function HomeScreen() {
           <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
             {t("home.featured")}
           </Text>
-          <View style={styles.featuredSeeAll}>
+          <Pressable
+            style={styles.featuredSeeAll}
+            onPress={() => router.push("/news")}
+          >
             <Text style={styles.featuredSeeAllText}>{t("common.seeAll")}</Text>
             <ChevronRight color="#FF3B31" size={20} />
-          </View>
+          </Pressable>
         </View>
         {articlesLoading ? (
           <View
@@ -283,6 +286,7 @@ const styles = StyleSheet.create({
   },
   featuredSeeAll: {
     alignItems: "center",
+    flexDirection: "row",
   },
   featuredSeeAllText: {
     color: "#FF3B31",
