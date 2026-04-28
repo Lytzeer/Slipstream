@@ -2,6 +2,10 @@ import { getCmsApiBaseUrlFromEnv } from "@/lib/api/cms/groups-content.api";
 import type { CmsArticleEntry, CmsArticlesResponse } from "@/lib/api/cms/models/articles.types";
 import { mapChampionshipLinkValueToRaw } from "@/lib/api/cms/controllers/championship.controller";
 import type { ChampionshipRaw } from "@/types";
+import {
+  MOCK_ARTICLES,
+  MOCK_ARTICLE_CATEGORIES,
+} from "@/constants/mock-cms-data";
 
 const CMS_CACHE_TTL_MS = 90_000;
 const CMS_ARTICLES_API_ERROR_KEY = "cms.apiError";
@@ -190,7 +194,7 @@ export const fetchArticlesFeed = async (
   if (inFlight) return inFlight;
 
   const base = getCmsApiBaseUrlFromEnv();
-  if (!base) return { ok: false, error: CMS_ARTICLES_API_ERROR_KEY };
+  if (!base) return { ok: true, data: MOCK_ARTICLES };
 
   const request = (async (): Promise<FetchArticlesFeedResult> => {
     try {
@@ -239,7 +243,7 @@ export const fetchArticleCategories =
     if (inFlight) return inFlight;
 
     const base = getCmsApiBaseUrlFromEnv();
-    if (!base) return { ok: false, error: CMS_ARTICLES_API_ERROR_KEY };
+    if (!base) return { ok: true, data: MOCK_ARTICLE_CATEGORIES };
 
     const request = (async (): Promise<FetchArticleCategoriesResult> => {
       try {

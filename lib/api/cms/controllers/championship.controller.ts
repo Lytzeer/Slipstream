@@ -4,7 +4,13 @@ import {
   parseCmsChampionshipGroupJson,
 } from "@/lib/api/cms/groups-content.api";
 import type { CmsGroupChampionshipResponse } from "@/lib/api/cms/models/championship.types";
+import { mapChampionshipLinkValueToRaw, normalizeLinkValue } from "@/lib/api/cms/utils/championship-link.utils";
 import type { ChampionshipRaw, Race } from "@/types";
+import {
+  MOCK_CHAMPIONSHIPS_CATALOG,
+  MOCK_UPCOMING_RACES,
+  MOCK_PAST_RACES,
+} from "@/constants/mock-cms-data";
 
 /** Conservé pour compatibilité legacy ; le flux principal est 100% CMS dynamique. */
 export const CHAMPIONSHIPS_CATALOG_FALLBACK: ChampionshipRaw[] = [];
@@ -37,48 +43,7 @@ const setCached = <T>(store: Map<string, CacheEntry<T>>, key: string, value: T):
   store.set(key, { value, expiresAt: Date.now() + CMS_CACHE_TTL_MS });
 };
 
-const normalizeLinkValue = (value: string): string =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/[_\s]+/g, "-")
-    .replace(/-+/g, "-");
-
-const hashString = (s: string): number => {
-  let h = 0;
-  for (let i = 0; i < s.length; i += 1) h = (h << 5) - h + s.charCodeAt(i);
-  return Math.abs(h);
-};
-
-const isUpperToken = (token: string) => token.length <= 4;
-
-const toDisplayLabel = (linkValue: string): string =>
-  linkValue
-    .split("-")
-    .filter(Boolean)
-    .map((token) => (isUpperToken(token) ? token.toUpperCase() : `${token[0].toUpperCase()}${token.slice(1)}`))
-    .join(" ");
-
-const toChampionshipId = (linkValue: string): string =>
-  linkValue.replace(/[^a-z0-9]+/g, "").toUpperCase().slice(0, 24) || "X";
-
-const toDynamicColor = (seed: string): string => {
-  const hue = hashString(seed) % 360;
-  return `hsl(${hue} 72% 52%)`;
-};
-
-export const mapChampionshipLinkValueToRaw = (raw: string): ChampionshipRaw | null => {
-  const v = normalizeLinkValue(raw);
-  if (!v) return null;
-
-  return {
-    id: toChampionshipId(v),
-    nameKey: "",
-    color: toDynamicColor(v),
-    linkValue: v,
-    displayLabel: toDisplayLabel(v) || raw.trim(),
-  };
-};
+export { mapChampionshipLinkValueToRaw } from "@/lib/api/cms/utils/championship-link.utils";
 
 const sortCatalog = (list: ChampionshipRaw[]): ChampionshipRaw[] =>
   [...list].sort((a, b) =>
@@ -146,7 +111,7 @@ export const fetchChampionshipsCatalog =
     if (inFlight) return inFlight;
 
     const base = getCmsApiBaseUrlFromEnv();
-    if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+    if (!base) return { ok: true, data: MOCK_CHAMPIONSHIPS_CATALOG };
 
     const request = (async (): Promise<FetchChampionshipsCatalogResult> => {
       try {
@@ -271,7 +236,7 @@ export const fetchUpcomingRacesFeed = async (
   if (inFlightFeed) return inFlightFeed;
 
   const base = getCmsApiBaseUrlFromEnv();
-  if (!base) return { ok: false, error: CMS_CHAMPIONSHIPS_API_ERROR_KEY };
+  if (!base) return { ok: true, upcoming: MOCK_UPCOMING_RACES, past: MOCK_PAST_RACES };
 
   const request = (async (): Promise<FetchUpcomingRacesFeedResult> => {
     try {
