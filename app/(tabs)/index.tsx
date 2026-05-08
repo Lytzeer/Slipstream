@@ -1,93 +1,258 @@
-import ChampionshipBadge from "@/components/ui/championship-badge";
-import ChampionshipSelector from "@/components/ui/championship-selector";
-import InfoCard from "@/components/ui/info-card";
-import UpcomingRaceCard from "@/components/ui/upcomming-race-card";
+import {
+  ChampionshipBadge,
+  ChampionshipSelector,
+  InfoCard,
+  UpcomingRaceCard,
+} from "@/components/ui";
+import { colors as paletteColors } from "@/constants/theme";
+import { useTheme } from "@/contexts/theme-context";
+import { useArticlesFeed } from "@/hooks/use-articles-feed";
+import { useChampionshipsCatalog } from "@/hooks/use-championships-catalog";
+import { useUpcomingRacesFeed } from "@/hooks/use-upcoming-races-feed";
+import { type ChampionshipRaceFeedItem } from "@/lib/api/cms/controllers/championship.controller";
+import { getChampionshipDisplayName } from "@/lib/api/cms/models/championship-label.model";
 import { ImageBackground } from "expo-image";
+import { router } from "expo-router";
 import { ChevronRight, Clock } from "lucide-react-native";
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const { t, i18n } = useTranslation();
+  const {
+    championships: championshipsRaw,
+    error: championshipsError,
+    isLoading: championshipsLoading,
+  } = useChampionshipsCatalog();
   const [selectedChampionship, setSelectedChampionship] = useState<
     string | null
   >("ELMS");
 
-  const championshipsList = [
-    { id: "ELMS", name: "ELMS", color: "#FF3B31" },
-    { id: "LMC", name: "Le Mans Cup", color: "#FF9502" },
-    { id: "GTWORLD", name: "GT World", color: "#31D158" },
-  ];
+  const championshipsList = championshipsRaw.map((c) => ({
+    id: c.id,
+    name: getChampionshipDisplayName(c, t),
+    color: c.color,
+  }));
+
+  const selectedChampionshipItem = useMemo(
+    () =>
+      championshipsRaw.find((champ) => champ.id === selectedChampionship) ??
+      null,
+    [championshipsRaw, selectedChampionship],
+  );
+  const {
+    upcomingRaces,
+    error: upcomingRacesError,
+    isLoading: upcomingRacesLoading,
+  } = useUpcomingRacesFeed(i18n.language);
+
+  const { articles, isLoading: articlesLoading } = useArticlesFeed(
+    i18n.language,
+  );
+  const featuredArticle = useMemo(
+    () => articles.find((a) => a.featured),
+    [articles],
+  );
+  const latestArticles = useMemo(() => articles.slice(0, 2), [articles]);
+
+  const selectedChampionshipRaces = useMemo<ChampionshipRaceFeedItem[]>(() => {
+    if (!selectedChampionshipItem) return upcomingRaces;
+    return upcomingRaces.filter(
+      (item) => item.championship.id === selectedChampionshipItem.id,
+    );
+  }, [upcomingRaces, selectedChampionshipItem]);
+
+  useEffect(() => {
+    if (championshipsError || championshipsRaw.length === 0) return;
+    if (
+      !selectedChampionship ||
+      !championshipsRaw.some((c) => c.id === selectedChampionship)
+    ) {
+      setSelectedChampionship(championshipsRaw[0].id);
+    }
+  }, [championshipsRaw, championshipsError, selectedChampionship]);
 
   return (
     <ScrollView
-      style={styles.containerBox}
+      style={[styles.containerBox, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.scrollView}
     >
-      <View id="titleSection">
-        <Text style={styles.title}>Slipstream</Text>
+      <View id="titleSection" style={styles.titleSection}>
+        <Image
+          source={require("@/assets/images/02-horizontal-bold-black.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
-      <ChampionshipSelector
-        championships={championshipsList}
-        selectedChampionship={selectedChampionship}
-        onChampionshipChange={setSelectedChampionship}
-      />
       <View id="featuredContentSection">
         <View style={styles.featuredHeaderContent}>
-          <Text style={styles.featuredHeaderTitle}>À la une</Text>
-          <View style={styles.featuredSeeAll}>
-            <Text style={styles.featuredSeeAllText}>Voir tout</Text>
-            <ChevronRight color="#FF3B31" size={20} />
-          </View>
-        </View>
-        <ImageBackground
-          source={require("../../assets/images/featured.png")}
-          style={styles.featuredImage}
-        >
-          <ChampionshipBadge
-            champ={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
-          />
-          <Text style={styles.featuredImageText}>
-            Retour sur la victoire historique aux 24h du Mans
+          <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
+            {t("home.featured")}
           </Text>
-          <View style={styles.featuredImageSubTextContainer}>
-            <Clock color="white" size={14} />
-            <Text style={styles.featuredImageSubText}>8 min de lecture</Text>
+          <Pressable
+            style={styles.featuredSeeAll}
+            onPress={() => router.push("/news")}
+          >
+            <Text style={styles.featuredSeeAllText}>{t("common.seeAll")}</Text>
+            <ChevronRight color="#FF3B31" size={20} />
+          </Pressable>
+        </View>
+        {articlesLoading ? (
+          <View
+            style={[
+              styles.featuredImage,
+              {
+                backgroundColor: colors.surfaceAlt,
+                justifyContent: "center",
+                alignItems: "center",
+              },
+            ]}
+          >
+            <ActivityIndicator color={colors.primary} />
           </View>
-        </ImageBackground>
+        ) : featuredArticle ? (
+          <Pressable
+            onPress={() => router.push(`/article/${featuredArticle.id}`)}
+          >
+            <ImageBackground
+              source={
+                featuredArticle.imageUrl
+                  ? { uri: featuredArticle.imageUrl }
+                  : require("../../assets/images/featured.png")
+              }
+              style={styles.featuredImage}
+            >
+              <View style={styles.featuredOverlay}>
+                {featuredArticle.championship && (
+                  <ChampionshipBadge
+                    champ={{
+                      id: featuredArticle.championship.id,
+                      name:
+                        featuredArticle.championship.displayLabel ??
+                        featuredArticle.championship.nameKey,
+                      color: featuredArticle.championship.color,
+                    }}
+                  />
+                )}
+                <Text style={styles.featuredImageText}>
+                  {featuredArticle.title}
+                </Text>
+                <View style={styles.featuredImageSubTextContainer}>
+                  <Clock color="white" size={14} />
+                  <Text style={styles.featuredImageSubText}>
+                    {t("home.readTime", {
+                      count: featuredArticle.readTimeMinutes,
+                    })}
+                  </Text>
+                </View>
+              </View>
+            </ImageBackground>
+          </Pressable>
+        ) : null}
       </View>
       <View id="lastActivitySection" style={{ marginTop: 40 }}>
-        <Text style={styles.featuredHeaderTitle}>Dernières actualités</Text>
-        <InfoCard
-          image={require("@/assets/images/info/info1.png")}
-          category="Analyse"
-          title="Analyse technique : Les secrets de la Ferrari 499P"
-          readTime="12 min"
-        />
-        <InfoCard
-          image={require("@/assets/images/info/info1.png")}
-          category="Le Mans Cup"
-          title="Prochaine course à Monza : Preview et favoris"
-          readTime="6 min"
-        />
+        <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
+          {t("home.lastNews")}
+        </Text>
+        {latestArticles.map((article) => (
+          <InfoCard
+            key={article.id}
+            image={article.imageUrl ?? ""}
+            category={article.category ?? ""}
+            title={article.title}
+            readTime={t("home.readTime", { count: article.readTimeMinutes })}
+            onPress={() => router.push(`/article/${article.id}`)}
+          />
+        ))}
       </View>
       <View id="upcomingRacesSection" style={{ marginTop: 40 }}>
-        <Text style={styles.featuredHeaderTitle}>Prochaines courses</Text>
-        <UpcomingRaceCard
-          championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
-          race={{
-            name: "4 Heures du Castellet",
-            date: "03 Mai 2026",
-            circuit: "Circuit Paul Ricard",
-          }}
-        />
-        <UpcomingRaceCard
-          championship={{ id: "ELMS", name: "ELMS", color: "#FF3B31" }}
-          race={{
-            name: "4 Heures d'Imola",
-            date: "05 Juillet 2026",
-            circuit: "Autodromo Enzo e Dino Ferrari",
-          }}
-        />
+        <Text style={[styles.featuredHeaderTitle, { color: colors.text }]}>
+          {t("home.upcomingRaces")}
+        </Text>
+        {championshipsLoading ? (
+          <View style={styles.championshipsLoading}>
+            <ActivityIndicator color={colors.primary} />
+          </View>
+        ) : championshipsError ? (
+          <Text
+            style={[
+              styles.championshipsApiError,
+              { color: paletteColors.error },
+            ]}
+          >
+            {t(championshipsError)}
+          </Text>
+        ) : (
+          <>
+            <View style={styles.championshipsFilterWrap}>
+              <ChampionshipSelector
+                championships={championshipsList}
+                selectedChampionship={selectedChampionship}
+                onChampionshipChange={setSelectedChampionship}
+              />
+            </View>
+            {upcomingRacesLoading ? (
+              <View style={styles.championshipsLoading}>
+                <ActivityIndicator color={colors.primary} />
+              </View>
+            ) : upcomingRacesError ? (
+              <Text
+                style={[
+                  styles.championshipsApiError,
+                  { color: paletteColors.error },
+                ]}
+              >
+                {t(upcomingRacesError)}
+              </Text>
+            ) : upcomingRaces.length === 0 || !selectedChampionshipItem ? (
+              <Text
+                style={[
+                  styles.championshipsApiError,
+                  { color: colors.textMuted },
+                ]}
+              >
+                Aucune course disponible
+              </Text>
+            ) : (
+              <View style={styles.racesSlidesContainer}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.racesSlideRow}
+                >
+                  {selectedChampionshipRaces.map((race) => (
+                    <View
+                      key={`${race.championship.id}-${race.race.name}-${race.race.date}`}
+                      style={styles.racesSlideCard}
+                    >
+                      <UpcomingRaceCard
+                        championship={{
+                          id: race.championship.id,
+                          name: getChampionshipDisplayName(
+                            race.championship,
+                            t,
+                          ),
+                          color: race.championship.color,
+                        }}
+                        race={race.race}
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -100,24 +265,28 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingVertical: 30,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    paddingVertical: 10,
+  titleSection: {
+    paddingTop: 6,
+    paddingBottom: 4,
+    alignItems: "flex-start",
+  },
+  logo: {
+    width: 280,
+    height: 75,
   },
   featuredHeaderContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 60,
+    marginTop: 30,
   },
   featuredHeaderTitle: {
     fontWeight: "600",
     fontSize: 26,
   },
   featuredSeeAll: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
   },
   featuredSeeAllText: {
     color: "#FF3B31",
@@ -127,12 +296,19 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 225,
     marginTop: 20,
-    display: "flex",
-    justifyContent: "flex-end",
-    padding: 20,
     borderRadius: 16,
     overflow: "hidden",
+  },
+  featuredOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    padding: 20,
     gap: 8,
+    justifyContent: "flex-end",
   },
   featuredImageText: {
     color: "white",
@@ -149,5 +325,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     opacity: 0.8,
+  },
+  championshipsLoading: {
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  championshipsApiError: {
+    fontSize: 15,
+    fontWeight: "500",
+    paddingVertical: 16,
+  },
+  championshipsFilterWrap: {
+    marginTop: 12,
+  },
+  racesSlidesContainer: {
+    marginTop: 12,
+    gap: 12,
+  },
+  racesSlideRow: {
+    gap: 12,
+    paddingRight: 8,
+  },
+  racesSlideCard: {
+    width: 320,
   },
 });
