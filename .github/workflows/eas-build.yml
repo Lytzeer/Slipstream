@@ -29,6 +29,9 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Publish update
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
           eas update \
             --branch ${{ github.head_ref || github.ref_name }} \
